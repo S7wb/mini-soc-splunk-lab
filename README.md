@@ -1,18 +1,17 @@
 # Mini SOC Monitoring Lab with Splunk
 
 ## Overview
-This project documents a private hands-on Mini SOC lab built to practice SOC monitoring, Splunk-based detection, alerting, dashboards, log analysis, and IOC extraction.
+This project documents a hands-on Mini SOC lab built to practice SOC monitoring, Splunk-based detection, alerting, dashboards, log analysis, and IOC extraction.
 
 The main use case focuses on detecting SSH brute-force attempts using Linux authentication logs.
 
 ## Lab Environment
 
-| Component | Role |
-|---|---|
-| Splunk Server | SIEM and log analysis |
-| Ubuntu Server | Monitored Linux server |
-| Kali Linux | Attack simulation machine |
-| Victim Machine | Target system for detection |
+| Component | Operating System | Role |
+|---|---|---|
+| Splunk Server | Ubuntu Server 22.04 | Centralized log collection, analysis, alerts, and dashboards |
+| Victim Machine | Linux | Monitored target that generates authentication logs |
+| Kali Linux | Kali Linux | Controlled attack simulation machine |
 
 ## Tools Used
 - Splunk
@@ -32,10 +31,8 @@ The detection identifies repeated failed SSH login attempts from the same source
 
 ## Project Contents
 - Lab architecture
-- Setup guide
 - SPL detection query
 - Alerting logic
-- Dashboard documentation
 - SOC-style incident report
 - Screenshots
 - Lessons learned
@@ -49,3 +46,46 @@ The detection identifies repeated failed SSH login attempts from the same source
 
 ## Disclaimer
 This project was built in a controlled lab environment for educational and portfolio purposes only.
+
+## Repository Structure
+
+```text
+mini-soc-splunk-lab/
+├── README.md
+├── detections/
+│   └── ssh-bruteforce-detection.spl
+├── reports/
+│   └── ssh-bruteforce-incident-report.md
+├── docs/
+│   ├── architecture.md
+│   └── lessons-learned.md
+└── screenshots/
+    └── README.md
+```
+
+## Documentation
+
+- [Lab Architecture](docs/architecture.md)
+- [Lessons Learned](docs/lessons-learned.md)
+- [SSH Brute-Force Detection Query](detections/ssh-bruteforce-detection.spl)
+- [SSH Brute-Force Incident Report](reports/ssh-bruteforce-incident-report.md)
+- [Project Screenshots](screenshots/README.md)
+
+## Current Project Status
+
+The SSH brute-force detection use case has been implemented, tested, and documented.
+
+Completed items:
+
+- Centralized Linux log collection
+- SSH brute-force simulation
+- SPL detection query
+- Splunk alert configuration
+- SOC monitoring dashboard
+- Alert investigation
+- IOC extraction
+- Incident report
+- Architecture documentation
+- Lessons learned documentation
+
+Additional detection use cases will be added after they are configured, tested, and validated in the lab.
