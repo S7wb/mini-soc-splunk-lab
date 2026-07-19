@@ -1,7 +1,10 @@
-index=main source="/var/log/auth.log" ("Failed password" OR "authentication failure")
-| rex "from (?<src_ip>\d{1,3}(?:\.\d{1,3}){3})"
-| rex "for (invalid user )?(?<username>\w+)"
-| stats count as failed_attempts values(username) as targeted_users earliest(_time) as first_seen latest(_time) as last_seen by src_ip
+index=main source="/var/log/auth.log" "Failed password" sshd
+| rex field=_raw "(?:message repeated (?<repeat_count>\d+) times:\s+\[\s*)?Failed password for (?:invalid user\s+)?(?<username>\S+) from (?<src_ip>\d{1,3}(?:\.\d{1,3}){3})"
+| eval attempts=coalesce(tonumber(repeat_count), 1)
+| where isnotnull(src_ip)
+| stats sum(attempts) as failed_attempts values(username) as targeted_users earliest(_time) as first_seen latest(_time) as last_seen by host src_ip
 | where failed_attempts >= 5
+| eval duration_seconds=round(last_seen-first_seen, 2)
 | convert ctime(first_seen) ctime(last_seen)
+| table host src_ip targeted_users failed_attempts first_seen last_seen duration_seconds
 | sort - failed_attempts
