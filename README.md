@@ -58,7 +58,8 @@ mini-soc-splunk-lab/
 │   └── ssh-bruteforce-incident-report.md
 ├── docs/
 │   ├── architecture.md
-│   └── lessons-learned.md
+│   ├── lessons-learned.md
+│   └── ssh-bruteforce-use-case.md
 └── screenshots/
     └── README.md
 ```
@@ -66,6 +67,7 @@ mini-soc-splunk-lab/
 ## Documentation
 
 - [Lab Architecture](docs/architecture.md)
+- [SSH Brute-Force Detection Use Case](docs/ssh-bruteforce-use-case.md)
 - [Lessons Learned](docs/lessons-learned.md)
 - [SSH Brute-Force Detection Query](detections/ssh-bruteforce-detection.spl)
 - [SSH Brute-Force Incident Report](reports/ssh-bruteforce-incident-report.md)
@@ -86,6 +88,7 @@ Completed items:
 - IOC extraction
 - Incident report
 - Architecture documentation
+- SSH brute-force use case documentation
 - Lessons learned documentation
-
+  
 Additional detection use cases will be added after they are configured, tested, and validated in the lab.
