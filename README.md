@@ -58,6 +58,7 @@ mini-soc-splunk-lab/
 ├── reports/
 │   └── ssh-bruteforce-incident-report.md
 ├── docs/
+│   ├── alert-configuration.md
 │   ├── architecture.md
 │   ├── lessons-learned.md
 │   ├── setup-guide.md
@@ -71,6 +72,7 @@ mini-soc-splunk-lab/
 - [Lab Architecture](docs/architecture.md)
 - [Lab Setup Guide](docs/setup-guide.md)
 - [SSH Brute-Force Detection Use Case](docs/ssh-bruteforce-use-case.md)
+- [SSH Brute-Force Alert Configuration](docs/alert-configuration.md)
 - [Lessons Learned](docs/lessons-learned.md)
 - [SSH Brute-Force Detection Query](detections/ssh-bruteforce-detection.spl)
 - [SSH Brute-Force Incident Report](reports/ssh-bruteforce-incident-report.md)
@@ -85,6 +87,7 @@ Completed items:
 - Lab setup guide
 - Centralized Linux log collection
 - SSH brute-force simulation
+- Validated Splunk alert configuration
 - SPL detection query
 - Splunk alert configuration
 - SOC monitoring dashboard
