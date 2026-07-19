@@ -50,11 +50,25 @@ The SOC monitoring dashboard provides visibility into SSH detections, defensive 
 
 ![SOC Monitoring Dashboard](07-soc-dashboard.png)
 
-## 8. Investigation Evidence
+## 8. Initial Brute-Force Investigation Evidence
 
 The investigation search confirms that the tested source IP generated failed authentication events and that no successful SSH password authentication was observed during the test window.
 
 ![SSH Investigation Evidence](08-investigation-evidence.png)
+
+## 9. SSH Failure-to-Success Events
+
+The raw Linux authentication events show five failed SSH password attempts against the `soc-test` account, followed by a successful password authentication from the same source IP address.
+
+![SSH Failure-to-Success Events](09-ssh-failure-success-events.png)
+
+## 10. SSH Failure-to-Success Detection Results
+
+The correlation query identified five failed authentication attempts followed by a successful login from `192.168.56.30` against the `soc-test` account.
+
+The successful login occurred approximately `6.49` seconds after the final failed attempt, and the complete sequence occurred within approximately `12.69` seconds.
+
+![SSH Failure-to-Success Detection Results](10-ssh-failure-success-detection-results.png)
 
 ## Evidence Summary
 
@@ -67,7 +81,10 @@ The investigation search confirms that the tested source IP generated failed aut
 | Scheduled alert configuration | Validated |
 | Alert triggering | Confirmed |
 | SOC dashboard | Documented |
-| Successful-login review | No successful authentication observed |
+| Initial brute-force investigation | No successful authentication observed |
+| Failure-to-success authentication sequence | Confirmed |
+| SSH failure-to-success raw events | Verified |
+| Failure-to-success correlation detection | Validated |
 
 ## Privacy and Safety Notice
 
