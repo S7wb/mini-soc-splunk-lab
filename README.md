@@ -31,6 +31,7 @@ The detection identifies repeated failed SSH login attempts from the same source
 
 ## Project Contents
 - Lab architecture
+- Lab setup guide
 - SPL detection query
 - Alerting logic
 - SOC-style incident report
@@ -59,6 +60,7 @@ mini-soc-splunk-lab/
 ├── docs/
 │   ├── architecture.md
 │   ├── lessons-learned.md
+│   ├── setup-guide.md
 │   └── ssh-bruteforce-use-case.md
 └── screenshots/
     └── README.md
@@ -67,6 +69,7 @@ mini-soc-splunk-lab/
 ## Documentation
 
 - [Lab Architecture](docs/architecture.md)
+- [Lab Setup Guide](docs/setup-guide.md)
 - [SSH Brute-Force Detection Use Case](docs/ssh-bruteforce-use-case.md)
 - [Lessons Learned](docs/lessons-learned.md)
 - [SSH Brute-Force Detection Query](detections/ssh-bruteforce-detection.spl)
@@ -79,6 +82,7 @@ The SSH brute-force detection use case has been implemented, tested, and documen
 
 Completed items:
 
+- Lab setup guide
 - Centralized Linux log collection
 - SSH brute-force simulation
 - SPL detection query
