@@ -1,0 +1,18 @@
+index=main host=victim source="/var/log/auth.log" sshd
+("Failed password" OR "Accepted password")
+| rex field=_raw "(?:message repeated (?<repeat_count>\d+) times:\s+\[\s*)?(?<auth_result>Failed|Accepted) password for (?:invalid user\s+)?(?<username>\S+) from (?<src_ip>\d{1,3}(?:\.\d{1,3}){3})"
+| eval attempts=if(auth_result="Failed", coalesce(tonumber(repeat_count), 1), 0)
+| stats sum(attempts) as failed_attempts
+    earliest(eval(if(auth_result="Failed", _time, null()))) as first_failure
+    latest(eval(if(auth_result="Failed", _time, null()))) as last_failure
+    earliest(eval(if(auth_result="Accepted", _time, null()))) as successful_login_time
+    by host src_ip username
+| where failed_attempts >= 5
+    AND isnotnull(successful_login_time)
+    AND successful_login_time > last_failure
+| eval attack_window_seconds=round(successful_login_time-first_failure, 2)
+| eval time_after_last_failure_seconds=round(successful_login_time-last_failure, 2)
+| where attack_window_seconds <= 600
+| convert ctime(first_failure) ctime(last_failure) ctime(successful_login_time)
+| table host src_ip username failed_attempts first_failure last_failure successful_login_time attack_window_seconds time_after_last_failure_seconds
+| sort - successful_login_time
