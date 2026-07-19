@@ -70,6 +70,14 @@ mini-soc-splunk-lab/
 │   ├── setup-guide.md
 │   └── ssh-bruteforce-use-case.md
 └── screenshots/
+    ├── 01-lab-virtual-machines.png
+    ├── 02-splunk-log-ingestion.png
+    ├── 03-ssh-bruteforce-events.png
+    ├── 04-detection-query-results.png
+    ├── 05-alert-configuration.png
+    ├── 06-triggered-alert.png
+    ├── 07-soc-dashboard.png
+    ├── 08-investigation-evidence.png
     └── README.md
 ```
 
@@ -84,6 +92,16 @@ mini-soc-splunk-lab/
 - [SSH Brute-Force Incident Report](reports/ssh-bruteforce-incident-report.md)
 - [Project Screenshots](screenshots/README.md)
 
+## Visual Evidence
+
+The following dashboard provides an overview of the security events monitored in the Mini SOC lab.
+
+![SOC Monitoring Dashboard](screenshots/07-soc-dashboard.png)
+
+View the complete evidence gallery:
+
+- [Project Screenshots and Validation Evidence](screenshots/README.md)
+
 ## Current Project Status
 
 The SSH brute-force detection use case has been implemented, tested, and documented.
@@ -91,6 +109,7 @@ The SSH brute-force detection use case has been implemented, tested, and documen
 Completed items:
 
 - Lab setup guide
+- Visual evidence gallery
 - MITRE ATT&CK mapping
 - Centralized Linux log collection
 - SSH brute-force simulation
