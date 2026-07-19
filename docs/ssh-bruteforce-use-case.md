@@ -1,0 +1,137 @@
+# SSH Brute-Force Detection Use Case
+
+## Overview
+
+This use case detects repeated failed SSH login attempts originating from the same source IP address.
+
+The detection was tested in a controlled Mini SOC lab using Kali Linux, an Ubuntu victim machine, Splunk Enterprise, and Linux authentication logs.
+
+## Objective
+
+The objective is to identify password-guessing or brute-force activity targeting SSH accounts before unauthorized access is achieved.
+
+## Data Source
+
+The detection relies on Linux SSH authentication events containing:
+
+```text
+Failed password
+```
+
+Lab configuration:
+
+| Setting | Value |
+|---|---|
+| Index | `main` |
+| Source | `/var/log/auth.log` |
+| Service | `sshd` |
+| Threshold | 5 failed attempts |
+| Recommended search window | Last 5 minutes |
+
+## Environment-Specific Configuration
+
+The following values may need to be changed in another environment:
+
+| Setting | Description |
+|---|---|
+| `index=main` | Replace `main` with the index containing Linux authentication logs |
+| `source="/var/log/auth.log"` | Replace it if authentication logs use another source |
+| `sshd` | Confirm that SSH events contain this value |
+| `failed_attempts >= 5` | Adjust the threshold based on the environment |
+| Search time range | Configure the saved search or alert time window |
+
+The source IP address does not need to be entered manually. It is extracted automatically from each SSH event.
+
+## Detection Query
+
+The validated SPL query is stored in:
+
+```text
+detections/ssh-bruteforce-detection.spl
+```
+
+The query:
+
+1. Searches for failed SSH password events.
+2. Extracts the source IP address.
+3. Extracts the targeted username.
+4. Handles compressed `message repeated` events.
+5. Calculates the number of failed attempts.
+6. Groups activity by destination host and source IP.
+7. Returns results when the threshold is reached.
+
+## Detection Output
+
+| Field | Description |
+|---|---|
+| `host` | Monitored system receiving the SSH attempts |
+| `src_ip` | Source IP generating the attempts |
+| `targeted_users` | Accounts targeted by the activity |
+| `failed_attempts` | Total failed authentication attempts |
+| `first_seen` | Time of the first failed attempt |
+| `last_seen` | Time of the latest failed attempt |
+| `duration_seconds` | Duration of the activity |
+
+## Validated Test Result
+
+The detection was tested using six incorrect SSH passwords from Kali Linux.
+
+| Field | Test Result |
+|---|---|
+| Destination host | `victim` |
+| Source IP | `192.168.56.30` |
+| Targeted user | `saeed` |
+| Failed attempts | `6` |
+| Activity duration | Approximately `14.78` seconds |
+
+## Recommended Alert Configuration
+
+| Setting | Recommended Value |
+|---|---|
+| Alert type | Scheduled |
+| Schedule | Every 5 minutes |
+| Search time range | Last 5 minutes |
+| Trigger condition | Number of results is greater than 0 |
+| Severity | Medium |
+
+The severity should be increased if failed attempts are followed by a successful login from the same source IP.
+
+## Investigation Steps
+
+1. Confirm the source IP address.
+2. Identify the targeted usernames.
+3. Review the number and timing of failed attempts.
+4. Search for successful SSH logins from the same IP.
+5. Review activity before and after the authentication attempts.
+6. Determine whether the IP is expected or authorized.
+7. Check whether other systems were targeted.
+8. Document the findings and response actions.
+
+## Potential False Positives
+
+- A user repeatedly entering an incorrect password
+- An outdated password stored in an automated script
+- A misconfigured administration tool
+- A legitimate administrator attempting multiple accounts
+- An internal security assessment
+
+## Recommended Response Actions
+
+- Block the source IP address
+- Temporarily disable the targeted account
+- Reset the account password
+- Review successful login activity
+- Terminate suspicious SSH sessions
+- Check for privilege escalation or persistence
+- Review other systems for related activity
+- Preserve relevant logs and evidence
+
+## Limitations
+
+This detection does not independently detect:
+
+- Successful compromise
+- SSH key abuse
+- Distributed attacks using many source IP addresses
+- Low-and-slow attacks below the threshold
+- Authentication logs stored under a different source
