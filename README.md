@@ -29,6 +29,12 @@ The main use case focuses on detecting SSH brute-force attempts using Linux auth
 
 The detection identifies repeated failed SSH login attempts from the same source IP within a short time window.
 
+### MITRE ATT&CK Mapping
+
+- Tactic: Credential Access (`TA0006`)
+- Technique: Brute Force (`T1110`)
+- Sub-technique: Password Guessing (`T1110.001`)
+
 ## Project Contents
 - Lab architecture
 - Lab setup guide
@@ -85,11 +91,11 @@ The SSH brute-force detection use case has been implemented, tested, and documen
 Completed items:
 
 - Lab setup guide
+- MITRE ATT&CK mapping
 - Centralized Linux log collection
 - SSH brute-force simulation
-- Validated Splunk alert configuration
 - SPL detection query
-- Splunk alert configuration
+- Validated Splunk alert configuration
 - SOC monitoring dashboard
 - Alert investigation
 - IOC extraction
