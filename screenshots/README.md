@@ -1,22 +1,76 @@
 # Project Screenshots
 
-This directory contains screenshots documenting the Mini SOC lab configuration, detection testing, alert investigation, and dashboard results.
+This directory contains visual evidence documenting the Mini SOC lab architecture, Splunk log ingestion, SSH brute-force detection, alert validation, investigation, and monitoring dashboard.
 
-## Planned Screenshots
+All displayed activity was generated inside an isolated and authorized lab environment.
 
-| File Name | Description |
+## 1. Lab Virtual Machines
+
+The VirtualBox environment includes the Splunk Server, Kali Linux attacker machine, and Ubuntu victim machine connected through the isolated `SOC-LAB` network.
+
+![Lab Virtual Machines](01-lab-virtual-machines.png)
+
+## 2. Splunk Log Ingestion
+
+Linux authentication logs from the monitored victim machine are successfully collected and indexed in Splunk Enterprise.
+
+![Splunk Log Ingestion](02-splunk-log-ingestion.png)
+
+## 3. Raw SSH Brute-Force Events
+
+Raw Linux authentication events show failed SSH passwords originating from the Kali Linux source address.
+
+The logs include normal events and a compressed `message repeated` event.
+
+![Raw SSH Brute-Force Events](03-ssh-bruteforce-events.png)
+
+## 4. Detection Query Results
+
+The validated SPL query extracts the source IP and targeted username, calculates repeated events, and identifies six failed authentication attempts.
+
+![SSH Detection Query Results](04-detection-query-results.png)
+
+## 5. Alert Configuration
+
+The Splunk alert is scheduled to run every five minutes and searches the previous five-minute window.
+
+It triggers when the detection query returns one or more results and records the alert with Medium severity.
+
+![SSH Alert Configuration](05-alert-configuration.png)
+
+## 6. Triggered Alert
+
+The validated SSH brute-force alert appeared successfully in the Splunk Triggered Alerts page.
+
+![Triggered SSH Alert](06-triggered-alert.png)
+
+## 7. SOC Monitoring Dashboard
+
+The SOC monitoring dashboard provides visibility into SSH detections, defensive blocks, web activity, suspicious user agents, source addresses, and recent security events.
+
+![SOC Monitoring Dashboard](07-soc-dashboard.png)
+
+## 8. Investigation Evidence
+
+The investigation search confirms that the tested source IP generated failed authentication events and that no successful SSH password authentication was observed during the test window.
+
+![SSH Investigation Evidence](08-investigation-evidence.png)
+
+## Evidence Summary
+
+| Evidence | Status |
 |---|---|
-| `01-lab-virtual-machines.png` | Virtual machines used in the Mini SOC environment |
-| `02-splunk-log-ingestion.png` | Linux authentication logs received by Splunk |
-| `03-ssh-bruteforce-events.png` | Raw failed SSH authentication events |
-| `04-detection-query-results.png` | SSH brute-force SPL detection results |
-| `05-alert-configuration.png` | Splunk alert configuration |
-| `06-triggered-alert.png` | Triggered SSH brute-force alert |
-| `07-soc-dashboard.png` | SOC monitoring dashboard |
-| `08-investigation-evidence.png` | Evidence used during alert investigation |
+| Virtual lab architecture | Documented |
+| Linux log ingestion | Verified |
+| Raw SSH events | Verified |
+| SPL detection logic | Validated |
+| Scheduled alert configuration | Validated |
+| Alert triggering | Confirmed |
+| SOC dashboard | Documented |
+| Successful-login review | No successful authentication observed |
 
-## Privacy Notice
+## Privacy and Safety Notice
 
-Sensitive information such as passwords, authentication tokens, personal usernames, and unnecessary internal IP addresses should be hidden before uploading screenshots.
+The displayed IP addresses belong to the isolated virtual lab network.
 
-All displayed attack activity was generated inside an isolated and authorized lab environment.
+No passwords, authentication tokens, public targets, production systems, or unauthorized devices are included in this project.
