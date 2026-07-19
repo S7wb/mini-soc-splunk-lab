@@ -1,9 +1,10 @@
 # Mini SOC Monitoring Lab with Splunk
 
 ## Overview
-This project documents a hands-on Mini SOC lab built to practice SOC monitoring, Splunk-based detection, alerting, dashboards, log analysis, and IOC extraction.
 
-The main use case focuses on detecting SSH brute-force attempts using Linux authentication logs.
+This project documents a hands-on Mini SOC lab built to practice SOC monitoring, Splunk-based detection, alerting, dashboards, log analysis, IOC extraction, alert investigation, and incident documentation.
+
+The current detection use cases focus on identifying SSH brute-force activity and detecting repeated failed SSH password attempts followed by successful authentication.
 
 ## Lab Environment
 
@@ -14,7 +15,8 @@ The main use case focuses on detecting SSH brute-force attempts using Linux auth
 | Kali Linux | Kali Linux | Controlled attack simulation machine |
 
 ## Tools Used
-- Splunk
+
+- Splunk Enterprise
 - Splunk Universal Forwarder
 - Ubuntu Server
 - Kali Linux
@@ -22,37 +24,81 @@ The main use case focuses on detecting SSH brute-force attempts using Linux auth
 - SPL
 - Hydra
 - SSH
+- Fail2Ban
+- VirtualBox
 
-## Detection Use Case
+## Detection Use Cases
 
-### SSH Brute Force Detection
+### 1. SSH Brute Force Detection
 
-The detection identifies repeated failed SSH login attempts from the same source IP within a short time window.
+This detection identifies repeated failed SSH login attempts originating from the same source IP address within a short time window.
 
-### MITRE ATT&CK Mapping
+| Setting | Value |
+|---|---|
+| Failure threshold | 5 attempts |
+| Search window | Last 5 minutes |
+| Severity | Medium |
+| Validation result | Triggered successfully |
 
-- Tactic: Credential Access (`TA0006`)
-- Technique: Brute Force (`T1110`)
-- Sub-technique: Password Guessing (`T1110.001`)
+### 2. SSH Brute Force Followed by Successful Login
+
+This detection correlates repeated failed SSH password attempts with a subsequent successful login from the same source IP address and against the same account.
+
+| Setting | Value |
+|---|---|
+| Failure threshold | 5 attempts |
+| Correlation window | Last 10 minutes |
+| Severity | High |
+| Validation result | Triggered successfully |
+
+## MITRE ATT&CK Mapping
+
+| Category | Mapping |
+|---|---|
+| Tactic | Credential Access (`TA0006`) |
+| Technique | Brute Force (`T1110`) |
+| Sub-technique | Password Guessing (`T1110.001`) |
+| Platform | Linux |
+| Targeted Service | SSH (`22/TCP`) |
 
 ## Project Contents
-- Lab architecture
+
+- Mini SOC lab architecture
 - Lab setup guide
-- SPL detection query
-- Alerting logic
-- SOC-style incident report
-- Screenshots
+- Centralized Linux log collection
+- SPL detection queries
+- Scheduled alert configurations
+- SSH brute-force simulation
+- Failure-to-success authentication correlation
+- Alert investigation and IOC extraction
+- SOC-style incident reports
+- MITRE ATT&CK mapping
+- SOC monitoring dashboard
+- Validation screenshots
 - Lessons learned
 
 ## What I Learned
+
 - Collecting and analyzing Linux authentication logs
-- Writing SPL queries for brute-force detection
-- Creating Splunk alerts and dashboards
-- Investigating alerts and extracting IOCs
-- Documenting SOC-style detection use cases
+- Configuring Splunk Universal Forwarder
+- Writing SPL queries for SSH detections
+- Extracting fields from raw events using `rex`
+- Handling compressed `message repeated` events
+- Correlating failed and successful authentication events
+- Creating scheduled Splunk alerts
+- Assigning severity based on detection context
+- Investigating alerts and extracting indicators
+- Reviewing successful authentication after repeated failures
+- Creating SOC monitoring dashboards
+- Writing SOC-style incident reports
+- Mapping detections to MITRE ATT&CK
+- Testing queries manually before configuring alerts
 
 ## Disclaimer
-This project was built in a controlled lab environment for educational and portfolio purposes only.
+
+This project was built in a controlled and isolated lab environment for educational and portfolio purposes only.
+
+All authentication and attack-simulation activity was performed against systems owned by the tester. No public, production, or unauthorized systems were targeted.
 
 ## Repository Structure
 
@@ -60,15 +106,19 @@ This project was built in a controlled lab environment for educational and portf
 mini-soc-splunk-lab/
 ├── README.md
 ├── detections/
-│   └── ssh-bruteforce-detection.spl
+│   ├── ssh-bruteforce-detection.spl
+│   └── ssh-bruteforce-followed-by-success.spl
 ├── reports/
-│   └── ssh-bruteforce-incident-report.md
+│   ├── ssh-bruteforce-incident-report.md
+│   └── ssh-bruteforce-followed-by-success-incident-report.md
 ├── docs/
 │   ├── alert-configuration.md
 │   ├── architecture.md
 │   ├── lessons-learned.md
 │   ├── setup-guide.md
-│   └── ssh-bruteforce-use-case.md
+│   ├── ssh-bruteforce-use-case.md
+│   ├── ssh-bruteforce-followed-by-success-use-case.md
+│   └── ssh-bruteforce-followed-by-success-alert-configuration.md
 └── screenshots/
     ├── 01-lab-virtual-machines.png
     ├── 02-splunk-log-ingestion.png
@@ -78,49 +128,105 @@ mini-soc-splunk-lab/
     ├── 06-triggered-alert.png
     ├── 07-soc-dashboard.png
     ├── 08-investigation-evidence.png
+    ├── 09-ssh-failure-success-events.png
+    ├── 10-ssh-failure-success-detection-results.png
     └── README.md
 ```
 
 ## Documentation
 
+### Lab Documentation
+
 - [Lab Architecture](docs/architecture.md)
 - [Lab Setup Guide](docs/setup-guide.md)
+- [Lessons Learned](docs/lessons-learned.md)
+
+### SSH Brute-Force Detection
+
 - [SSH Brute-Force Detection Use Case](docs/ssh-bruteforce-use-case.md)
 - [SSH Brute-Force Alert Configuration](docs/alert-configuration.md)
-- [Lessons Learned](docs/lessons-learned.md)
 - [SSH Brute-Force Detection Query](detections/ssh-bruteforce-detection.spl)
 - [SSH Brute-Force Incident Report](reports/ssh-bruteforce-incident-report.md)
-- [Project Screenshots](screenshots/README.md)
 
-## Visual Evidence
+### SSH Failure-to-Success Detection
 
-The following dashboard provides an overview of the security events monitored in the Mini SOC lab.
+- [SSH Failure-to-Success Detection Use Case](docs/ssh-bruteforce-followed-by-success-use-case.md)
+- [SSH Failure-to-Success Alert Configuration](docs/ssh-bruteforce-followed-by-success-alert-configuration.md)
+- [SSH Failure-to-Success Detection Query](detections/ssh-bruteforce-followed-by-success.spl)
+- [SSH Failure-to-Success Incident Report](reports/ssh-bruteforce-followed-by-success-incident-report.md)
 
-![SOC Monitoring Dashboard](screenshots/07-soc-dashboard.png)
-
-View the complete evidence gallery:
+### Evidence
 
 - [Project Screenshots and Validation Evidence](screenshots/README.md)
 
+## Visual Evidence
+
+The following dashboard provides an overview of the security events monitored inside the Mini SOC lab.
+
+![SOC Monitoring Dashboard](screenshots/07-soc-dashboard.png)
+
+The complete validation gallery includes:
+
+- Virtual lab architecture
+- Linux log ingestion
+- Raw SSH authentication events
+- SPL detection results
+- Alert configuration
+- Triggered alerts
+- Investigation evidence
+- Failure-to-success authentication correlation
+
+[View the complete evidence gallery](screenshots/README.md)
+
+## Validated Results
+
+### SSH Brute-Force Detection
+
+| Field | Result |
+|---|---|
+| Destination host | `victim` |
+| Source IP | `192.168.56.30` |
+| Targeted user | `saeed` |
+| Failed attempts | `6` |
+| Severity | Medium |
+| Alert status | Triggered successfully |
+
+### SSH Brute Force Followed by Successful Login
+
+| Field | Result |
+|---|---|
+| Destination host | `victim` |
+| Source IP | `192.168.56.30` |
+| Targeted account | `soc-test` |
+| Failed attempts | `5` |
+| Attack window | Approximately `12.69` seconds |
+| Time after final failure | Approximately `6.49` seconds |
+| Severity | High |
+| Alert status | Triggered successfully |
+
 ## Current Project Status
 
-The SSH brute-force detection use case has been implemented, tested, and documented.
+Two SSH detection use cases have been implemented, tested, validated, and documented.
 
 Completed items:
 
-- Lab setup guide
-- Visual evidence gallery
-- MITRE ATT&CK mapping
+- Mini SOC lab setup guide
+- Virtual lab architecture
 - Centralized Linux log collection
+- Splunk Universal Forwarder configuration
 - SSH brute-force simulation
-- SPL detection query
-- Validated Splunk alert configuration
-- SOC monitoring dashboard
+- SSH brute-force detection query
+- SSH failure-to-success correlation query
+- Medium-severity brute-force alert
+- High-severity compromise-pattern alert
+- Scheduled alert validation
+- Triggered alert verification
 - Alert investigation
 - IOC extraction
-- Incident report
-- Architecture documentation
-- SSH brute-force use case documentation
+- Two SOC-style incident reports
+- MITRE ATT&CK mapping
+- SOC monitoring dashboard
+- Visual evidence gallery
 - Lessons learned documentation
-  
-Additional detection use cases will be added after they are configured, tested, and validated in the lab.
+
+Additional detection use cases will be added only after they are configured, tested, investigated, and validated inside the lab.
