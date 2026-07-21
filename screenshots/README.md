@@ -1,6 +1,6 @@
 # Project Screenshots
 
-This directory contains visual evidence documenting the Mini SOC lab architecture, Splunk log ingestion, SSH brute-force detection, alert validation, investigation, and monitoring dashboard.
+This directory contains visual evidence documenting the Mini SOC lab architecture, Splunk log ingestion, SSH brute-force detection, failure-to-success authentication correlation, privilege-escalation detection, alert validation, investigation, and monitoring dashboard.
 
 All displayed activity was generated inside an isolated and authorized lab environment.
 
@@ -70,6 +70,24 @@ The successful login occurred approximately `6.49` seconds after the final faile
 
 ![SSH Failure-to-Success Detection Results](10-ssh-failure-success-detection-results.png)
 
+## 11. SSH Privilege-Escalation Detection Results
+
+The validated correlation query identified successful SSH authentication followed by sudo command execution and the opening of a root session for the same Linux account.
+
+Two independent privilege-escalation sequences were detected for the `soc-test` account originating from `192.168.56.30`.
+
+The authorized command `/usr/bin/id` executed with root privileges. The measured times from SSH login to root-level execution were approximately `11.43` seconds and `5.68` seconds.
+
+![SSH Privilege-Escalation Detection Results](11-ssh-privilege-escalation-detection-results.png)
+
+## 12. SSH Privilege-Escalation Triggered Alert
+
+The scheduled Splunk alert triggered successfully with Critical severity after detecting a successful SSH login followed by sudo command execution and root-session creation.
+
+A fifteen-minute throttle was enabled and validated to suppress duplicate alerts caused by overlapping scheduled search windows.
+
+![SSH Privilege-Escalation Triggered Alert](12-ssh-privilege-escalation-triggered-alert.png)
+
 ## Evidence Summary
 
 | Evidence | Status |
@@ -85,6 +103,11 @@ The successful login occurred approximately `6.49` seconds after the final faile
 | Failure-to-success authentication sequence | Confirmed |
 | SSH failure-to-success raw events | Verified |
 | Failure-to-success correlation detection | Validated |
+| SSH privilege-escalation correlation | Validated |
+| Critical privilege-escalation alert | Confirmed |
+| Positive and negative validation tests | Passed |
+| Multiple escalation sequences | Verified |
+| Duplicate-alert suppression | Verified |
 
 ## Privacy and Safety Notice
 
