@@ -137,23 +137,28 @@ All authentication, privilege-escalation, and attack-simulation activity was per
 mini-soc-splunk-lab/
 ├── README.md
 ├── detections/
-│   ├── ssh-bruteforce-detection.spl
-│   ├── ssh-bruteforce-followed-by-success.spl
-│   └── ssh-login-followed-by-privilege-escalation.spl
+│   ├── 01-ssh-bruteforce.spl
+│   ├── 02-ssh-failure-to-success.spl
+│   └── 03-ssh-privilege-escalation.spl
 ├── reports/
-│   ├── ssh-bruteforce-incident-report.md
-│   ├── ssh-bruteforce-followed-by-success-incident-report.md
-│   └── ssh-login-followed-by-privilege-escalation-incident-report.md
+│   ├── 01-ssh-bruteforce-incident-report.md
+│   ├── 02-ssh-failure-to-success-incident-report.md
+│   └── 03-ssh-privilege-escalation-incident-report.md
 ├── docs/
-│   ├── alert-configuration.md
-│   ├── architecture.md
-│   ├── lessons-learned.md
-│   ├── setup-guide.md
-│   ├── ssh-bruteforce-use-case.md
-│   ├── ssh-bruteforce-followed-by-success-use-case.md
-│   ├── ssh-bruteforce-followed-by-success-alert-configuration.md
-│   ├── ssh-login-followed-by-privilege-escalation-use-case.md
-│   └── ssh-login-followed-by-privilege-escalation-alert-configuration.md
+│   ├── lab/
+│   │   ├── architecture.md
+│   │   ├── setup-guide.md
+│   │   └── lessons-learned.md
+│   └── use-cases/
+│       ├── 01-ssh-bruteforce/
+│       │   ├── use-case.md
+│       │   └── alert-configuration.md
+│       ├── 02-ssh-failure-to-success/
+│       │   ├── use-case.md
+│       │   └── alert-configuration.md
+│       └── 03-ssh-privilege-escalation/
+│           ├── use-case.md
+│           └── alert-configuration.md
 └── screenshots/
     ├── 01-lab-virtual-machines.png
     ├── 02-splunk-log-ingestion.png
@@ -174,30 +179,30 @@ mini-soc-splunk-lab/
 
 ### Lab Documentation
 
-- [Lab Architecture](docs/architecture.md)
-- [Lab Setup Guide](docs/setup-guide.md)
-- [Lessons Learned](docs/lessons-learned.md)
+- [Lab Architecture](docs/lab/architecture.md)
+- [Lab Setup Guide](docs/lab/setup-guide.md)
+- [Lessons Learned](docs/lab/lessons-learned.md)
 
 ### SSH Brute-Force Detection
 
-- [SSH Brute-Force Detection Use Case](docs/ssh-bruteforce-use-case.md)
-- [SSH Brute-Force Alert Configuration](docs/alert-configuration.md)
-- [SSH Brute-Force Detection Query](detections/ssh-bruteforce-detection.spl)
-- [SSH Brute-Force Incident Report](reports/ssh-bruteforce-incident-report.md)
+- [SSH Brute-Force Detection Use Case](docs/use-cases/01-ssh-bruteforce/use-case.md)
+- [SSH Brute-Force Alert Configuration](docs/use-cases/01-ssh-bruteforce/alert-configuration.md)
+- [SSH Brute-Force Detection Query](detections/01-ssh-bruteforce.spl)
+- [SSH Brute-Force Incident Report](reports/01-ssh-bruteforce-incident-report.md)
 
 ### SSH Failure-to-Success Detection
 
-- [SSH Failure-to-Success Detection Use Case](docs/ssh-bruteforce-followed-by-success-use-case.md)
-- [SSH Failure-to-Success Alert Configuration](docs/ssh-bruteforce-followed-by-success-alert-configuration.md)
-- [SSH Failure-to-Success Detection Query](detections/ssh-bruteforce-followed-by-success.spl)
-- [SSH Failure-to-Success Incident Report](reports/ssh-bruteforce-followed-by-success-incident-report.md)
+- [SSH Failure-to-Success Detection Use Case](docs/use-cases/02-ssh-failure-to-success/use-case.md)
+- [SSH Failure-to-Success Alert Configuration](docs/use-cases/02-ssh-failure-to-success/alert-configuration.md)
+- [SSH Failure-to-Success Detection Query](detections/02-ssh-failure-to-success.spl)
+- [SSH Failure-to-Success Incident Report](reports/02-ssh-failure-to-success-incident-report.md)
 
 ### SSH Privilege-Escalation Detection
 
-- [SSH Privilege-Escalation Detection Use Case](docs/ssh-login-followed-by-privilege-escalation-use-case.md)
-- [SSH Privilege-Escalation Alert Configuration](docs/ssh-login-followed-by-privilege-escalation-alert-configuration.md)
-- [SSH Privilege-Escalation Detection Query](detections/ssh-login-followed-by-privilege-escalation.spl)
-- [SSH Privilege-Escalation Incident Report](reports/ssh-login-followed-by-privilege-escalation-incident-report.md)
+- [SSH Privilege-Escalation Detection Use Case](docs/use-cases/03-ssh-privilege-escalation/use-case.md)
+- [SSH Privilege-Escalation Alert Configuration](docs/use-cases/03-ssh-privilege-escalation/alert-configuration.md)
+- [SSH Privilege-Escalation Detection Query](detections/03-ssh-privilege-escalation.spl)
+- [SSH Privilege-Escalation Incident Report](reports/03-ssh-privilege-escalation-incident-report.md)
 
 ### Evidence
 
