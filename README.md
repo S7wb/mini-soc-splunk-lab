@@ -2,7 +2,9 @@
 
 ## Overview
 
-This project documents a hands-on Mini SOC lab built to practice SOC monitoring, Splunk-based detection, alerting, dashboards, log analysis, IOC extraction, alert investigation, and incident documentation.
+This project presents a hands-on Mini SOC Monitoring Lab built with Splunk to simulate real-world security monitoring and incident investigation workflows. The lab focuses on centralized log collection, detection engineering, alerting, event correlation, IOC extraction, incident investigation, MITRE ATT&CK mapping, and SOC-style incident documentation.
+
+The environment consists of an Ubuntu-based Splunk server, an Ubuntu victim machine, and a Kali Linux attacker machine operating inside an isolated VirtualBox lab network.
 
 The current detection use cases focus on:
 
