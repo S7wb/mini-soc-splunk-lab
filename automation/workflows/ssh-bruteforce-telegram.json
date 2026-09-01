@@ -1,0 +1,83 @@
+{
+  "name": "SOC - SSH Brute Force Telegram (Public Template)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "splunk-ssh-alert-demo",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        -128
+      ],
+      "id": "fffc5b67-60f2-4b63-887a-d255d5bc38f5",
+      "name": "Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "removeItemsSeenInPreviousExecutions",
+        "dedupeValue": "={{ $json.body.result.host + '|' + $json.body.result.src_ip + '|' + $json.body.result.targeted_users + '|' + $json.body.result.first_seen }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        -128
+      ],
+      "id": "a38e43f9-e805-4789-a9f9-abf3463d842e",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "chatId": "<YOUR_TELEGRAM_CHAT_ID>",
+        "text": "={{ \n'🚨 SOC ALERT — ' + $json.body.search_name + '\\n\\n' +\n'🔴 Severity: Medium\\n' +\n'🖥️ Host: ' + $json.body.result.host + '\\n' +\n'🌐 Source IP: ' + $json.body.result.src_ip + '\\n' +\n'👤 Target User: ' + $json.body.result.targeted_users + '\\n' +\n'🔐 Failed Attempts: ' + $json.body.result.failed_attempts + '\\n' +\n'⏱️ Duration: ' + $json.body.result.duration_seconds + ' seconds\\n\\n' +\n'🕐 First Seen: ' + $json.body.result.first_seen + '\\n' +\n'🕐 Last Seen: ' + $json.body.result.last_seen + '\\n\\n' +\n'🎯 MITRE ATT&CK: T1110.001 — Password Guessing\\n' +\n'📋 Detection: ' + $json.body.search_name + '\\n\\n' +\n'🔎 Splunk Investigation:\\n' + $json.body.results_link\n}}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        256,
+        -128
+      ],
+      "id": "6c784a62-72c2-43f1-a90a-8d038d43e4e1",
+      "name": "Send a text message"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "tags": []
+}
