@@ -114,3 +114,122 @@ A fifteen-minute throttle was enabled and validated to suppress duplicate alerts
 The displayed IP addresses belong to the isolated virtual lab network.
 
 No passwords, authentication tokens, public targets, production systems, or unauthorized devices are included in this project.
+
+## SOC Alert Automation Evidence
+
+The following screenshots document the end-to-end SOC alert automation implemented using Splunk, n8n, and Telegram.
+
+### 13. n8n Container Running
+
+![n8n Container Running](13-n8n-container-running.png)
+
+Demonstrates that the n8n Docker container is running successfully and exposing TCP port `5678`.
+
+---
+
+### 14. n8n Web Interface
+
+![n8n Web Interface](14-n8n-web-interface.png)
+
+Confirms that the n8n application is accessible and operational inside the Mini SOC lab.
+
+---
+
+### 15. Splunk Webhook Alert Action
+
+![Splunk Webhook Alert Action](15-splunk-webhook-action.png)
+
+Shows the Splunk alert configured with a Webhook alert action used to forward triggered security alerts to n8n.
+
+Sensitive portions of the webhook endpoint should be redacted before publication.
+
+---
+
+### 16. n8n Webhook Reception
+
+![n8n Webhook Reception](16-n8n-webhook-received.png)
+
+Shows the n8n Webhook node successfully receiving alert data from Splunk.
+
+---
+
+### 17. n8n Workflow Execution
+
+![n8n Workflow Execution](17-n8n-workflow-execution.png)
+
+Shows the successful execution of the SOC automation workflow.
+
+The implemented workflow is:
+
+```text
+Webhook
+   |
+   v
+Remove Duplicates
+   |
+   v
+Telegram
+```
+
+---
+
+### 18. Duplicate Filtering
+
+![n8n Remove Duplicates](18-n8n-remove-duplicates.png)
+
+Shows the duplicate filtering stage used to reduce unnecessary repeated alert processing.
+
+---
+
+### 19. Telegram Node Execution
+
+![n8n Telegram Execution](19-n8n-telegram-execution.png)
+
+Shows the Telegram node executing successfully after the Splunk alert is processed by n8n.
+
+---
+
+### 20. Telegram SOC Alert
+
+![Telegram SOC Alert](20-telegram-soc-alert.png)
+
+Shows the final SOC notification successfully delivered to the analyst through Telegram.
+
+This screenshot confirms the complete automation chain:
+
+```text
+Splunk Detection
+      |
+      v
+Splunk Alert
+      |
+      v
+Webhook
+      |
+      v
+n8n
+      |
+      v
+Duplicate Filtering
+      |
+      v
+Telegram
+      |
+      v
+SOC Analyst
+```
+
+## Automation Validation Result
+
+| Evidence | Status |
+|---|---|
+| n8n running | Validated |
+| n8n interface accessible | Validated |
+| Splunk webhook configured | Validated |
+| Webhook received by n8n | Validated |
+| Workflow executed | Validated |
+| Duplicate filtering executed | Validated |
+| Telegram node executed | Validated |
+| SOC alert received in Telegram | Validated |
+
+The evidence confirms successful end-to-end alert automation from Splunk detection to external analyst notification.
