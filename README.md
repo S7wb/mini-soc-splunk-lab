@@ -33,6 +33,10 @@ The current detection use cases focus on:
 - sudo
 - Fail2Ban
 - VirtualBox
+- Docker
+- n8n
+- Webhooks
+- Telegram Bot
 
 ## Detection Use Cases
 
@@ -85,6 +89,119 @@ Related techniques for the third use case:
 - Remote Services: SSH (`T1021.004`)
 - Valid Accounts: Local Accounts (`T1078.003`)
 
+## SOC Alert Automation
+
+The Mini SOC lab also includes a validated security automation workflow that extends Splunk alerting with automated analyst notification.
+
+The automation uses **n8n** to receive triggered Splunk alerts through a webhook, reduce duplicate processing, and deliver structured SOC notifications through Telegram.
+
+### Automation Architecture
+
+```text
+Linux Security Event
+        |
+        v
+Splunk Universal Forwarder
+        |
+        v
+Splunk Enterprise
+        |
+        v
+SPL Detection
+        |
+        v
+Scheduled Alert
+        |
+        v
+Splunk Webhook Alert Action
+        |
+        v
+n8n Webhook
+        |
+        v
+Remove Duplicates
+        |
+        v
+Telegram Bot
+        |
+        v
+SOC Analyst Notification
+```
+
+### Validated Automation
+
+The first detection integrated with the automation workflow is:
+
+**SSH Brute-Force Detection**
+
+The end-to-end workflow was successfully validated:
+
+| Stage | Status |
+|---|---|
+| Splunk detection | Validated |
+| Scheduled alert | Validated |
+| Webhook alert action | Validated |
+| n8n webhook reception | Validated |
+| Duplicate filtering | Validated |
+| Telegram execution | Validated |
+| Analyst notification | Validated |
+
+The automation extends the original SOC workflow from:
+
+```text
+Detection → Alert → Manual Review
+```
+
+to:
+
+```text
+Detection → Alert → Automation → Notification → Investigation
+```
+
+### Automation Workflow
+
+The implemented n8n workflow contains:
+
+```text
+Webhook
+   |
+   v
+Remove Duplicates
+   |
+   v
+Telegram
+```
+
+A sanitized version of the workflow is available for review and import:
+
+- [Sanitized n8n Workflow](automation/workflows/ssh-bruteforce-telegram.json)
+
+### Automation Documentation
+
+- [SOC Alert Automation Overview](automation/README.md)
+- [n8n Installation](automation/n8n-installation.md)
+- [Splunk Webhook Integration](automation/splunk-webhook-integration.md)
+- [n8n Workflow Design](automation/workflow-design.md)
+- [Telegram Integration](automation/telegram-integration.md)
+- [End-to-End Validation](automation/validation.md)
+
+### Automation Evidence
+
+The repository includes screenshots demonstrating:
+
+- n8n running inside Docker
+- n8n web interface availability
+- Splunk Webhook alert action
+- Successful Splunk-to-n8n webhook reception
+- Successful n8n workflow execution
+- Duplicate filtering
+- Successful Telegram node execution
+- Final SOC alert delivered to Telegram
+
+[View the complete evidence gallery](screenshots/README.md)
+
+> Sensitive credentials, Telegram tokens, Chat IDs, webhook identifiers, and environment-specific IDs were removed or redacted before publication.
+
 ## Project Contents
 
 - Mini SOC lab architecture
@@ -103,6 +220,12 @@ Related techniques for the third use case:
 - SOC monitoring dashboard
 - Validation screenshots
 - Lessons learned
+- Splunk-to-n8n webhook integration
+- n8n SOC alert automation workflow
+- Duplicate alert processing control
+- Telegram analyst notifications
+- End-to-end automation validation
+- Sanitized reusable n8n workflow template
 
 ## What I Learned
 
@@ -126,6 +249,13 @@ Related techniques for the third use case:
 - Writing SOC-style incident reports
 - Mapping detections to MITRE ATT&CK
 - Testing queries manually before configuring alerts
+- Integrating Splunk alerts with external automation platforms
+- Using webhooks for SIEM alert orchestration
+- Building security automation workflows with n8n
+- Reducing duplicate automated notifications
+- Delivering structured SOC alerts through Telegram
+- Separating SIEM detection from notification automation
+- Sanitizing automation workflows before publishing them publicly
 
 ## Disclaimer
 
@@ -138,6 +268,15 @@ All authentication, privilege-escalation, and attack-simulation activity was per
 ```text
 mini-soc-splunk-lab/
 ├── README.md
+├── automation/
+│   ├── README.md
+│   ├── n8n-installation.md
+│   ├── splunk-webhook-integration.md
+│   ├── workflow-design.md
+│   ├── telegram-integration.md
+│   ├── validation.md
+│   └── workflows/
+│       └── ssh-bruteforce-telegram.json
 ├── detections/
 │   ├── 01-ssh-bruteforce.spl
 │   ├── 02-ssh-failure-to-success.spl
@@ -174,6 +313,14 @@ mini-soc-splunk-lab/
     ├── 10-ssh-failure-success-detection-results.png
     ├── 11-ssh-privilege-escalation-detection-results.png
     ├── 12-ssh-privilege-escalation-triggered-alert.png
+    ├── 13-n8n-container-running.png
+    ├── 14-n8n-web-interface.png
+    ├── 15-splunk-webhook-action.png
+    ├── 16-n8n-webhook-received.png
+    ├── 17-n8n-workflow-execution.png
+    ├── 18-n8n-remove-duplicates.png
+    ├── 19-n8n-telegram-execution.png
+    ├── 20-telegram-soc-alert.png
     └── README.md
 ```
 
@@ -314,5 +461,11 @@ Completed items:
 - SOC monitoring dashboard
 - Visual evidence gallery
 - Lessons learned documentation
+- Splunk-to-n8n webhook integration
+- n8n SOC alert automation workflow
+- Duplicate alert processing control
+- Telegram SOC notification integration
+- End-to-end automation validation
+- Sanitized n8n workflow published for portfolio review
 
 Additional detection use cases will be added only after they are configured, tested, investigated, and validated inside the lab.
