@@ -339,6 +339,48 @@ The following evidence was collected during validation:
 
 ---
 
+### Evidence Screenshots
+
+#### 1. Failed sudo Attempts — Event Generation
+
+![Failed sudo Attempts](../../../screenshots/04-multiple-failed-sudo-attempts/01-sudo-failed-attempts.png)
+
+#### 2. Raw sudo Event Ingested into Splunk
+
+![Raw sudo Event in Splunk](../../../screenshots/04-multiple-failed-sudo-attempts/02-raw-sudo-event-splunk.png)
+
+#### 3. SPL Detection Result
+
+![SPL Detection Result](../../../screenshots/04-multiple-failed-sudo-attempts/03-spl-detection-result.png)
+
+#### 4. Detection Threshold Validation
+
+![Detection Threshold Validation](../../../screenshots/04-multiple-failed-sudo-attempts/04-detection-threshold-validation.png)
+
+#### 5. Alert Configuration
+
+![Alert Configuration](../../../screenshots/04-multiple-failed-sudo-attempts/05-alert-configuration.png)
+
+#### 6. Alert Saved Successfully
+
+![Alert Saved Successfully](../../../screenshots/04-multiple-failed-sudo-attempts/06-alert-saved-successfully.png)
+
+#### 7. Triggered Alert
+
+![Triggered Alert](../../../screenshots/04-multiple-failed-sudo-attempts/07-triggered-alert.png)
+
+#### 8. Triggered Alert Result
+
+![Triggered Alert Result](../../../screenshots/04-multiple-failed-sudo-attempts/08-triggered-alert-result.png)
+
+#### 9. sudo Authentication Investigation
+
+![sudo Authentication Investigation](../../../screenshots/04-multiple-failed-sudo-attempts/09-sudo-authentication-investigation.png)
+
+#### 10. No Successful sudo Session
+
+![No Successful sudo Session](../../../screenshots/04-multiple-failed-sudo-attempts/10-no-successful-sudo-session.png)
+
 ## Result
 
 **Detection Status: PASS**
