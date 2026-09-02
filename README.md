@@ -11,6 +11,7 @@ The current detection use cases focus on:
 - Detecting repeated SSH authentication failures
 - Correlating failed SSH attempts followed by successful authentication
 - Detecting successful SSH access followed by sudo execution and root-level privilege escalation
+- Detecting repeated failed sudo authentication attempts
 
 ## Lab Environment
 
@@ -76,6 +77,19 @@ This detection correlates a successful SSH password login with subsequent sudo c
 | Throttle | 15 minutes |
 | Validation result | Triggered successfully |
 
+### 4. Multiple Failed sudo Attempts
+
+This detection identifies repeated failed `sudo` authentication attempts on a Linux host and alerts when three or more incorrect sudo password attempts are recorded.
+
+| Setting | Value |
+|---|---|
+| Failure threshold | 3 incorrect sudo password attempts |
+| Search window | Last 5 minutes |
+| Schedule | Every 5 minutes |
+| Severity | Medium |
+| Validation result | Triggered successfully |
+| Privilege-escalation outcome | No successful sudo session observed |
+
 ## MITRE ATT&CK Mapping
 
 | Use Case | Tactic | Technique | Sub-technique |
@@ -83,6 +97,7 @@ This detection correlates a successful SSH password login with subsequent sudo c
 | SSH Brute Force Detection | Credential Access (`TA0006`) | Brute Force (`T1110`) | Password Guessing (`T1110.001`) |
 | SSH Brute Force Followed by Successful Login | Credential Access (`TA0006`) | Brute Force (`T1110`) | Password Guessing (`T1110.001`) |
 | SSH Login Followed by Privilege Escalation | Privilege Escalation (`TA0004`) | Abuse Elevation Control Mechanism (`T1548`) | Sudo and Sudo Caching (`T1548.003`) |
+| Multiple Failed sudo Attempts | Privilege Escalation (`TA0004`) | Abuse Elevation Control Mechanism (`T1548`) | Sudo and Sudo Caching (`T1548.003`) |
 
 Related techniques for the third use case:
 
@@ -212,6 +227,8 @@ The repository includes screenshots demonstrating:
 - SSH brute-force simulation
 - Failure-to-success authentication correlation
 - SSH-to-root privilege-escalation correlation
+- Multiple failed sudo authentication detection
+- sudo authentication failure investigation
 - Positive and negative detection testing
 - Alert throttling and duplicate suppression
 - Alert investigation and IOC extraction
@@ -236,6 +253,9 @@ The repository includes screenshots demonstrating:
 - Handling compressed `message repeated` events
 - Correlating failed and successful authentication events
 - Correlating SSH, sudo, and root-session events
+- Detecting repeated failed sudo authentication attempts
+- Extracting sudo failure counts from Linux authentication logs using SPL
+- Investigating whether failed sudo attempts were followed by a successful privileged session
 - Using `streamstats` to preserve chronological event context
 - Returning separate results for independent escalation sequences
 - Creating scheduled Splunk alerts
@@ -280,11 +300,13 @@ mini-soc-splunk-lab/
 ├── detections/
 │   ├── 01-ssh-bruteforce.spl
 │   ├── 02-ssh-failure-to-success.spl
-│   └── 03-ssh-privilege-escalation.spl
+│   ├── 03-ssh-privilege-escalation.spl
+│   └── 04-multiple-failed-sudo-attempts.spl
 ├── reports/
 │   ├── 01-ssh-bruteforce-incident-report.md
 │   ├── 02-ssh-failure-to-success-incident-report.md
-│   └── 03-ssh-privilege-escalation-incident-report.md
+│   ├── 03-ssh-privilege-escalation-incident-report.md
+│   └── 04-multiple-failed-sudo-attempts-incident-report.md
 ├── docs/
 │   ├── lab/
 │   │   ├── architecture.md
@@ -297,7 +319,10 @@ mini-soc-splunk-lab/
 │       ├── 02-ssh-failure-to-success/
 │       │   ├── use-case.md
 │       │   └── alert-configuration.md
-│       └── 03-ssh-privilege-escalation/
+│       ├── 03-ssh-privilege-escalation/
+│       │   ├── use-case.md
+│       │   └── alert-configuration.md
+│       └── 04-multiple-failed-sudo-attempts/
 │           ├── use-case.md
 │           └── alert-configuration.md
 └── screenshots/
@@ -321,6 +346,17 @@ mini-soc-splunk-lab/
     ├── 18-n8n-remove-duplicates.png
     ├── 19-n8n-telegram-execution.png
     ├── 20-telegram-soc-alert.png
+    ├── 04-multiple-failed-sudo-attempts/
+    │   ├── 01-sudo-failed-attempts.png
+    │   ├── 02-raw-sudo-event-splunk.png
+    │   ├── 03-spl-detection-result.png
+    │   ├── 04-detection-threshold-validation.png
+    │   ├── 05-alert-configuration.png
+    │   ├── 06-alert-saved-successfully.png
+    │   ├── 07-triggered-alert.png
+    │   ├── 08-triggered-alert-result.png
+    │   ├── 09-sudo-authentication-investigation.png
+    │   └── 10-no-successful-sudo-session.png
     └── README.md
 ```
 
@@ -352,6 +388,13 @@ mini-soc-splunk-lab/
 - [SSH Privilege-Escalation Alert Configuration](docs/use-cases/03-ssh-privilege-escalation/alert-configuration.md)
 - [SSH Privilege-Escalation Detection Query](detections/03-ssh-privilege-escalation.spl)
 - [SSH Privilege-Escalation Incident Report](reports/03-ssh-privilege-escalation-incident-report.md)
+
+### Multiple Failed sudo Attempts
+
+- [Multiple Failed sudo Attempts Use Case](docs/use-cases/04-multiple-failed-sudo-attempts/use-case.md)
+- [Multiple Failed sudo Attempts Alert Configuration](docs/use-cases/04-multiple-failed-sudo-attempts/alert-configuration.md)
+- [Multiple Failed sudo Attempts Detection Query](detections/04-multiple-failed-sudo-attempts.spl)
+- [Multiple Failed sudo Attempts Incident Report](reports/04-multiple-failed-sudo-attempts-incident-report.md)
 
 ### Evidence
 
@@ -419,6 +462,23 @@ The complete validation gallery includes:
 | Alert status | Triggered successfully |
 | Duplicate suppression | Verified using a 15-minute throttle |
 
+### Multiple Failed sudo Attempts
+
+| Field | Result |
+|---|---|
+| Destination host | `victim` |
+| User | `saeed` |
+| Failed sudo attempts | `3` |
+| Requested privileged account | `root` |
+| Attempted command | `/usr/bin/whoami` |
+| Detection threshold | `failed_attempts >= 3` |
+| Search window | Last 5 minutes |
+| Schedule | Every 5 minutes |
+| Severity | Medium |
+| Alert status | Triggered successfully |
+| Successful sudo session | Not observed |
+| Privilege escalation outcome | Not successful |
+
 ## Validation Matrix
 
 | Scenario | Expected Result | Actual Result | Status |
@@ -430,10 +490,12 @@ The complete validation gallery includes:
 | SSH login followed by sudo and root session | Critical alert | Critical alert | Passed |
 | Multiple privilege-escalation sequences | Separate results | Separate results | Passed |
 | Repeated scheduled searches | Duplicate alerts suppressed | Suppressed | Passed |
+| Three failed sudo password attempts | Medium alert | Medium alert | Passed |
+| Failed sudo attempts followed by no successful root session | No successful privilege escalation | No successful privilege escalation | Passed |
 
 ## Current Project Status
 
-Three SSH detection use cases have been implemented, tested, investigated, validated, and documented.
+Four detection use cases have been implemented, tested, investigated, validated, and documented.
 
 Completed items:
 
@@ -456,7 +518,7 @@ Completed items:
 - Duplicate-alert suppression validation
 - Alert investigation
 - IOC extraction
-- Three SOC-style incident reports
+- Four SOC-style incident reports
 - MITRE ATT&CK mapping
 - SOC monitoring dashboard
 - Visual evidence gallery
@@ -467,5 +529,8 @@ Completed items:
 - Telegram SOC notification integration
 - End-to-end automation validation
 - Sanitized n8n workflow published for portfolio review
-
+- Multiple failed sudo attempts detection
+- Medium-severity sudo authentication alert
+- sudo authentication investigation
+- Validation of no successful sudo/root session
 Additional detection use cases will be added only after they are configured, tested, investigated, and validated inside the lab.
