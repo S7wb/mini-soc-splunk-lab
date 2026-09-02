@@ -233,3 +233,92 @@ SOC Analyst
 | SOC alert received in Telegram | Validated |
 
 The evidence confirms successful end-to-end alert automation from Splunk detection to external analyst notification.
+
+---
+
+## Use Case 04 — Multiple Failed sudo Attempts
+
+The following screenshots document the complete validation workflow for **Use Case 04 — Multiple Failed sudo Attempts**.
+
+All screenshots for this use case are stored in:
+
+```text
+screenshots/04-multiple-failed-sudo-attempts/
+```
+
+### 1. Failed sudo Attempts — Event Generation
+
+Shows the controlled generation of three incorrect sudo password attempts on the Linux victim host.
+
+![Failed sudo Attempts](04-multiple-failed-sudo-attempts/01-sudo-failed-attempts.png)
+
+### 2. Raw sudo Event in Splunk
+
+Confirms that the generated sudo authentication event was successfully ingested from `/var/log/auth.log`.
+
+![Raw sudo Event in Splunk](04-multiple-failed-sudo-attempts/02-raw-sudo-event-splunk.png)
+
+### 3. SPL Detection Result
+
+Shows the SPL detection extracting the affected host, user, and number of failed sudo authentication attempts.
+
+![SPL Detection Result](04-multiple-failed-sudo-attempts/03-spl-detection-result.png)
+
+### 4. Detection Threshold Validation
+
+Confirms that the detection threshold `failed_attempts >= 3` successfully identified the simulated activity.
+
+![Detection Threshold Validation](04-multiple-failed-sudo-attempts/04-detection-threshold-validation.png)
+
+### 5. Alert Configuration
+
+Shows the final scheduled Splunk alert configuration, including the five-minute schedule, search window, trigger condition, Medium severity, and Triggered Alerts action.
+
+![Alert Configuration](04-multiple-failed-sudo-attempts/05-alert-configuration.png)
+
+### 6. Alert Saved Successfully
+
+Confirms that the scheduled Splunk alert was successfully saved.
+
+![Alert Saved Successfully](04-multiple-failed-sudo-attempts/06-alert-saved-successfully.png)
+
+### 7. Triggered Alert
+
+Shows the alert successfully appearing in Splunk Triggered Alerts after the controlled sudo authentication failures.
+
+![Triggered Alert](04-multiple-failed-sudo-attempts/07-triggered-alert.png)
+
+### 8. Triggered Alert Result
+
+Shows the triggered detection result containing the expected host, user, and failed-attempt count.
+
+![Triggered Alert Result](04-multiple-failed-sudo-attempts/08-triggered-alert-result.png)
+
+### 9. sudo Authentication Investigation
+
+Documents the investigation of related sudo authentication failures associated with the detected user and host.
+
+![sudo Authentication Investigation](04-multiple-failed-sudo-attempts/09-sudo-authentication-investigation.png)
+
+### 10. No Successful sudo Session
+
+Shows the investigation search returning zero events for a successful root sudo session during the investigated time window.
+
+![No Successful sudo Session](04-multiple-failed-sudo-attempts/10-no-successful-sudo-session.png)
+
+### Use Case 04 Evidence Summary
+
+| Evidence | Status |
+|---|---|
+| Controlled sudo failure generation | Verified |
+| Linux authentication log ingestion | Verified |
+| SPL field extraction | Validated |
+| Detection threshold | Validated |
+| Scheduled alert configuration | Validated |
+| Alert creation | Confirmed |
+| Triggered alert | Confirmed |
+| Triggered detection fields | Verified |
+| sudo authentication investigation | Completed |
+| Successful privileged session check | No successful session observed |
+
+**Use Case 04 Evidence Status: COMPLETE**
