@@ -161,3 +161,35 @@ returned:
 ```
 
 No evidence of successful privilege escalation was identified during the investigated time window.
+
+---
+
+## Alert Evidence
+
+### Alert Configuration
+
+The following screenshot shows the final scheduled Splunk alert configuration, including the five-minute schedule, search window, trigger condition, severity, and Triggered Alerts action.
+
+![Alert Configuration](../../../screenshots/04-multiple-failed-sudo-attempts/05-alert-configuration.png)
+
+### Alert Saved Successfully
+
+The following screenshot confirms that the alert was successfully saved in Splunk.
+
+![Alert Saved Successfully](../../../screenshots/04-multiple-failed-sudo-attempts/06-alert-saved-successfully.png)
+
+### Triggered Alert
+
+The scheduled alert successfully triggered after the controlled sudo authentication failures were generated.
+
+![Triggered Alert](../../../screenshots/04-multiple-failed-sudo-attempts/07-triggered-alert.png)
+
+### Triggered Alert Result
+
+The triggered alert result confirmed the expected detection fields:
+
+- Host: `victim`
+- User: `saeed`
+- Failed Attempts: `3`
+
+![Triggered Alert Result](../../../screenshots/04-multiple-failed-sudo-attempts/08-triggered-alert-result.png)
