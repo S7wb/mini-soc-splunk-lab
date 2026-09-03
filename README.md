@@ -12,6 +12,7 @@ The current detection use cases focus on:
 - Correlating failed SSH attempts followed by successful authentication
 - Detecting successful SSH access followed by sudo execution and root-level privilege escalation
 - Detecting repeated failed sudo authentication attempts
+- Detecting successful SSH authentication to privileged or sensitive Linux accounts
 
 ## Lab Environment
 
@@ -90,6 +91,24 @@ This detection identifies repeated failed `sudo` authentication attempts on a Li
 | Validation result | Triggered successfully |
 | Privilege-escalation outcome | No successful sudo session observed |
 
+### 5. Successful Login to a Privileged or Sensitive Account
+
+This detection identifies successful SSH authentication to Linux accounts classified as privileged or sensitive through a Splunk lookup.
+
+The validated lookup currently classifies `saeed` as a privileged `sudo` account and `root` as a sensitive root account.
+
+| Setting | Value |
+|---|---|
+| Authentication methods | Password or public key |
+| Account classification | `privileged_accounts.csv` lookup |
+| Search window | Last 5 minutes |
+| Schedule | Every 5 minutes |
+| Severity | High |
+| Trigger mode | For each result |
+| Throttle | 15 minutes by `user,src_ip` |
+| Validation result | Triggered successfully |
+| Negative test | Non-privileged `soc-test` login excluded |
+
 ## MITRE ATT&CK Mapping
 
 | Use Case | Tactic | Technique | Sub-technique |
@@ -98,11 +117,16 @@ This detection identifies repeated failed `sudo` authentication attempts on a Li
 | SSH Brute Force Followed by Successful Login | Credential Access (`TA0006`) | Brute Force (`T1110`) | Password Guessing (`T1110.001`) |
 | SSH Login Followed by Privilege Escalation | Privilege Escalation (`TA0004`) | Abuse Elevation Control Mechanism (`T1548`) | Sudo and Sudo Caching (`T1548.003`) |
 | Multiple Failed sudo Attempts | Privilege Escalation (`TA0004`) | Abuse Elevation Control Mechanism (`T1548`) | Sudo and Sudo Caching (`T1548.003`) |
+| Successful Login to a Privileged or Sensitive Account | Initial Access (`TA0001`), Persistence (`TA0003`), Privilege Escalation (`TA0004`), Defense Evasion (`TA0005`) | Valid Accounts (`T1078`) | Local Accounts (`T1078.003`) |
 
-Related techniques for the third use case:
+Related techniques:
 
+**Use Case 03**
 - Remote Services: SSH (`T1021.004`)
 - Valid Accounts: Local Accounts (`T1078.003`)
+
+**Use Case 05**
+- Remote Services: SSH (`T1021.004`) — Lateral Movement (`TA0008`)
 
 ## SOC Alert Automation
 
@@ -213,7 +237,7 @@ The repository includes screenshots demonstrating:
 - Successful Telegram node execution
 - Final SOC alert delivered to Telegram
 
-[View the complete evidence gallery](screenshots/README.md)
+[View additional project evidence](screenshots/README.md)
 
 > Sensitive credentials, Telegram tokens, Chat IDs, webhook identifiers, and environment-specific IDs were removed or redacted before publication.
 
@@ -229,6 +253,8 @@ The repository includes screenshots demonstrating:
 - SSH-to-root privilege-escalation correlation
 - Multiple failed sudo authentication detection
 - sudo authentication failure investigation
+- Privileged and sensitive account login detection
+- Lookup-based privileged account classification
 - Positive and negative detection testing
 - Alert throttling and duplicate suppression
 - Alert investigation and IOC extraction
@@ -254,6 +280,8 @@ The repository includes screenshots demonstrating:
 - Correlating failed and successful authentication events
 - Correlating SSH, sudo, and root-session events
 - Detecting repeated failed sudo authentication attempts
+- Detecting successful SSH authentication to privileged or sensitive accounts
+- Maintaining privileged account classifications with a Splunk lookup
 - Extracting sudo failure counts from Linux authentication logs using SPL
 - Investigating whether failed sudo attempts were followed by a successful privileged session
 - Using `streamstats` to preserve chronological event context
@@ -301,12 +329,16 @@ mini-soc-splunk-lab/
 │   ├── 01-ssh-bruteforce.spl
 │   ├── 02-ssh-failure-to-success.spl
 │   ├── 03-ssh-privilege-escalation.spl
-│   └── 04-multiple-failed-sudo-attempts.spl
+│   ├── 04-multiple-failed-sudo-attempts.spl
+│   └── 05-privileged-account-login.spl
+├── lookups/
+│   └── privileged_accounts.csv
 ├── reports/
 │   ├── 01-ssh-bruteforce-incident-report.md
 │   ├── 02-ssh-failure-to-success-incident-report.md
 │   ├── 03-ssh-privilege-escalation-incident-report.md
-│   └── 04-multiple-failed-sudo-attempts-incident-report.md
+│   ├── 04-multiple-failed-sudo-attempts-incident-report.md
+│   └── 05-privileged-account-login-incident-report.md
 ├── docs/
 │   ├── lab/
 │   │   ├── architecture.md
@@ -322,7 +354,10 @@ mini-soc-splunk-lab/
 │       ├── 03-ssh-privilege-escalation/
 │       │   ├── use-case.md
 │       │   └── alert-configuration.md
-│       └── 04-multiple-failed-sudo-attempts/
+│       ├── 04-multiple-failed-sudo-attempts/
+│       │   ├── use-case.md
+│       │   └── alert-configuration.md
+│       └── 05-privileged-account-login/
 │           ├── use-case.md
 │           └── alert-configuration.md
 └── screenshots/
@@ -357,6 +392,23 @@ mini-soc-splunk-lab/
     │   ├── 08-triggered-alert-result.png
     │   ├── 09-sudo-authentication-investigation.png
     │   └── 10-no-successful-sudo-session.png
+    ├── 05-privileged-account-login/
+    │   ├── 01-privileged-account-verification.png
+    │   ├── 02-successful-privileged-ssh-login.png
+    │   ├── 03-privileged-login-raw-log.png
+    │   ├── 04-splunk-raw-login-event.png
+    │   ├── 05-non-privileged-account-verification.png
+    │   ├── 06-negative-test-ssh-login.png
+    │   ├── 07-negative-test-raw-log.png
+    │   ├── 08-negative-test-splunk-event.png
+    │   ├── 09-negative-test-detection-validation.png
+    │   ├── 10-privileged-accounts-lookup.png
+    │   ├── 11-final-detection-results.png
+    │   ├── 12-alert-configuration.png
+    │   ├── 13-triggered-alert.png
+    │   ├── 14-triggered-alert-results.png
+    │   ├── 15-investigation-timeline.png
+    │   └── 16-investigation-context.png
     └── README.md
 ```
 
@@ -396,6 +448,14 @@ mini-soc-splunk-lab/
 - [Multiple Failed sudo Attempts Detection Query](detections/04-multiple-failed-sudo-attempts.spl)
 - [Multiple Failed sudo Attempts Incident Report](reports/04-multiple-failed-sudo-attempts-incident-report.md)
 
+### Successful Login to a Privileged or Sensitive Account
+
+- [Privileged Account Login Use Case](docs/use-cases/05-privileged-account-login/use-case.md)
+- [Privileged Account Login Alert Configuration](docs/use-cases/05-privileged-account-login/alert-configuration.md)
+- [Privileged Account Login Detection Query](detections/05-privileged-account-login.spl)
+- [Privileged Account Login Incident Report](reports/05-privileged-account-login-incident-report.md)
+- [Privileged Accounts Lookup](lookups/privileged_accounts.csv)
+
 ### Evidence
 
 - [Project Screenshots and Validation Evidence](screenshots/README.md)
@@ -418,8 +478,96 @@ The complete validation gallery includes:
 - Failure-to-success authentication correlation
 - SSH login followed by privilege escalation
 - Critical alert and throttle validation
+- Privileged account verification
+- Successful privileged SSH authentication
+- Non-privileged negative-test validation
+- Privileged account lookup validation
+- Triggered privileged-account alert
+- SOC investigation timeline and context
 
-[View the complete evidence gallery](screenshots/README.md)
+### UC5 — Privileged Account Login Evidence
+
+The following screenshots document the complete validation workflow for **Successful Login to a Privileged or Sensitive Account**.
+
+#### Privileged Account Verification
+
+![Privileged Account Verification](screenshots/05-privileged-account-login/01-privileged-account-verification.png)
+
+#### Successful Privileged SSH Login
+
+![Successful Privileged SSH Login](screenshots/05-privileged-account-login/02-successful-privileged-ssh-login.png)
+
+#### Raw Authentication Log
+
+![Privileged Login Raw Log](screenshots/05-privileged-account-login/03-privileged-login-raw-log.png)
+
+#### Splunk Log Ingestion
+
+![Splunk Raw Login Event](screenshots/05-privileged-account-login/04-splunk-raw-login-event.png)
+
+#### Non-Privileged Account Verification
+
+![Non-Privileged Account Verification](screenshots/05-privileged-account-login/05-non-privileged-account-verification.png)
+
+#### Negative Test — Successful SSH Login
+
+![Negative Test SSH Login](screenshots/05-privileged-account-login/06-negative-test-ssh-login.png)
+
+#### Negative Test — Raw Authentication Log
+
+![Negative Test Raw Log](screenshots/05-privileged-account-login/07-negative-test-raw-log.png)
+
+#### Negative Test — Splunk Ingestion
+
+![Negative Test Splunk Event](screenshots/05-privileged-account-login/08-negative-test-splunk-event.png)
+
+#### Negative Test — Detection Validation
+
+![Negative Test Detection Validation](screenshots/05-privileged-account-login/09-negative-test-detection-validation.png)
+
+#### Privileged Accounts Lookup
+
+![Privileged Accounts Lookup](screenshots/05-privileged-account-login/10-privileged-accounts-lookup.png)
+
+#### Final Detection Results
+
+![Final Detection Results](screenshots/05-privileged-account-login/11-final-detection-results.png)
+
+#### Alert Configuration
+
+![Alert Configuration](screenshots/05-privileged-account-login/12-alert-configuration.png)
+
+#### Triggered Alert
+
+![Triggered Alert](screenshots/05-privileged-account-login/13-triggered-alert.png)
+
+#### Triggered Alert Results
+
+![Triggered Alert Results](screenshots/05-privileged-account-login/14-triggered-alert-results.png)
+
+#### Investigation Timeline
+
+![Investigation Timeline](screenshots/05-privileged-account-login/15-investigation-timeline.png)
+
+#### Investigation Context
+
+![Investigation Context](screenshots/05-privileged-account-login/16-investigation-context.png)
+
+#### UC5 Evidence Summary
+
+| Evidence | Status |
+|---|---|
+| Privileged account verification | Verified |
+| Controlled privileged SSH login | Verified |
+| Raw authentication log | Verified |
+| Splunk ingestion | Verified |
+| Non-privileged account validation | Verified |
+| Negative test | Passed |
+| Privileged account lookup | Validated |
+| Final lookup-based SPL | Validated |
+| Scheduled alert | Validated |
+| Triggered alert | Confirmed |
+| SOC investigation | Completed |
 
 ## Validated Results
 
@@ -479,6 +627,24 @@ The complete validation gallery includes:
 | Successful sudo session | Not observed |
 | Privilege escalation outcome | Not successful |
 
+### Successful Login to a Privileged or Sensitive Account
+
+| Field | Result |
+|---|---|
+| Destination host | `victim` |
+| Source IP | `192.168.56.30` |
+| Privileged user | `saeed` |
+| Account type | `Privileged Account (sudo)` |
+| Authentication method | `password` |
+| Triggered source port | `55576` |
+| Account classification | `privileged_accounts.csv` |
+| Scheduled search range | Last 5 minutes |
+| Schedule | Every 5 minutes |
+| Severity | High |
+| Alert status | Triggered successfully |
+| Negative-test account | `soc-test` |
+| Negative-test result | Correctly excluded from detection |
+
 ## Validation Matrix
 
 | Scenario | Expected Result | Actual Result | Status |
@@ -492,10 +658,12 @@ The complete validation gallery includes:
 | Repeated scheduled searches | Duplicate alerts suppressed | Suppressed | Passed |
 | Three failed sudo password attempts | Medium alert | Medium alert | Passed |
 | Failed sudo attempts followed by no successful root session | No successful privilege escalation | No successful privilege escalation | Passed |
+| Successful SSH login to lookup-classified privileged account | High alert | High alert | Passed |
+| Successful SSH login to non-privileged account | No UC5 detection | No detection | Passed |
 
 ## Current Project Status
 
-Four detection use cases have been implemented, tested, investigated, validated, and documented.
+Five detection use cases have been implemented, tested, investigated, validated, and documented.
 
 Completed items:
 
@@ -518,7 +686,7 @@ Completed items:
 - Duplicate-alert suppression validation
 - Alert investigation
 - IOC extraction
-- Four SOC-style incident reports
+- Five SOC-style incident reports
 - MITRE ATT&CK mapping
 - SOC monitoring dashboard
 - Visual evidence gallery
@@ -531,6 +699,11 @@ Completed items:
 - Sanitized n8n workflow published for portfolio review
 - Multiple failed sudo attempts detection
 - Medium-severity sudo authentication alert
+- Privileged and sensitive account login detection
+- Lookup-based privileged account classification
+- High-severity privileged account login alert
+- Non-privileged account negative-test validation
+- Privileged account login investigation
 - sudo authentication investigation
 - Validation of no successful sudo/root session
 Additional detection use cases will be added only after they are configured, tested, investigated, and validated inside the lab.
