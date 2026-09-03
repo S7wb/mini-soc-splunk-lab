@@ -53,7 +53,7 @@ The investigation confirmed that:
 
 Classification:
 
-**True Positive — Authorized / Expected Lab Activity**
+**True Positive — Authorized / Expected Activity**
 
 The detection correctly identified a successful login to a privileged account.
 
