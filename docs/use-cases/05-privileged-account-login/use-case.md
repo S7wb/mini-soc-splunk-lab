@@ -271,6 +271,74 @@ If this detection occurred in a production environment:
 - Incident report completed: ✅
 - Screenshots captured: ✅
 
+## Validation Evidence
+
+The following screenshots document the complete UC5 validation workflow.
+
+### Privileged Account Verification
+
+![Privileged Account Verification](../../../screenshots/05-privileged-account-login/01-privileged-account-verification.png)
+
+### Successful Privileged SSH Login
+
+![Successful Privileged SSH Login](../../../screenshots/05-privileged-account-login/02-successful-privileged-ssh-login.png)
+
+### Raw Authentication Log
+
+![Privileged Login Raw Log](../../../screenshots/05-privileged-account-login/03-privileged-login-raw-log.png)
+
+### Splunk Log Ingestion
+
+![Splunk Raw Login Event](../../../screenshots/05-privileged-account-login/04-splunk-raw-login-event.png)
+
+### Non-Privileged Account Verification
+
+![Non-Privileged Account Verification](../../../screenshots/05-privileged-account-login/05-non-privileged-account-verification.png)
+
+### Negative Test — Successful SSH Login
+
+![Negative Test SSH Login](../../../screenshots/05-privileged-account-login/06-negative-test-ssh-login.png)
+
+### Negative Test — Raw Authentication Log
+
+![Negative Test Raw Log](../../../screenshots/05-privileged-account-login/07-negative-test-raw-log.png)
+
+### Negative Test — Splunk Ingestion
+
+![Negative Test Splunk Event](../../../screenshots/05-privileged-account-login/08-negative-test-splunk-event.png)
+
+### Negative Test — Detection Validation
+
+![Negative Test Detection Validation](../../../screenshots/05-privileged-account-login/09-negative-test-detection-validation.png)
+
+### Privileged Accounts Lookup
+
+![Privileged Accounts Lookup](../../../screenshots/05-privileged-account-login/10-privileged-accounts-lookup.png)
+
+### Final Detection Results
+
+![Final Detection Results](../../../screenshots/05-privileged-account-login/11-final-detection-results.png)
+
+### Alert Configuration
+
+![Alert Configuration](../../../screenshots/05-privileged-account-login/12-alert-configuration.png)
+
+### Triggered Alert
+
+![Triggered Alert](../../../screenshots/05-privileged-account-login/13-triggered-alert.png)
+
+### Triggered Alert Results
+
+![Triggered Alert Results](../../../screenshots/05-privileged-account-login/14-triggered-alert-results.png)
+
+### Investigation Timeline
+
+![Investigation Timeline](../../../screenshots/05-privileged-account-login/15-investigation-timeline.png)
+
+### Investigation Context
+
+![Investigation Context](../../../screenshots/05-privileged-account-login/16-investigation-context.png)
+
 ## Final Status
 
 **Validated**
