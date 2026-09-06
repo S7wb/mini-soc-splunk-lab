@@ -1,3 +1,0 @@
-user,account_type,severity
-saeed,Privileged Account (sudo),High
-root,Sensitive Account (root),Critical
