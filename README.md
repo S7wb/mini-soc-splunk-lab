@@ -1,5 +1,9 @@
 # Mini SOC Monitoring Lab with Splunk
 
+[Use-case roadmap](use-cases/README.md) · [Architecture](docs/architecture/README.md) · [Setup](docs/setup/README.md) · [Automation](automation/n8n/README.md) · [Evidence index](docs/evidence-index.md)
+
+> UC-01 to UC-05 contain existing lab material. UC-06 to UC-48 are planned templates. This restructuring did not repeat live Splunk validation; the existing technical descriptions and validation statements are retained.
+
 ## Overview
 
 This project presents a hands-on Mini SOC Monitoring Lab built with Splunk to simulate real-world security monitoring and incident investigation workflows. The lab focuses on centralized log collection, detection engineering, alerting, event correlation, IOC extraction, incident investigation, MITRE ATT&CK mapping, and SOC-style incident documentation.
@@ -213,16 +217,16 @@ Telegram
 
 A sanitized version of the workflow is available for review and import:
 
-- [Sanitized n8n Workflow](automation/workflows/ssh-bruteforce-telegram.json)
+- [Sanitized n8n Workflow](automation/n8n/workflows/ssh-brute-force-telegram.json)
 
 ### Automation Documentation
 
-- [SOC Alert Automation Overview](automation/README.md)
-- [n8n Installation](automation/n8n-installation.md)
-- [Splunk Webhook Integration](automation/splunk-webhook-integration.md)
-- [n8n Workflow Design](automation/workflow-design.md)
-- [Telegram Integration](automation/telegram-integration.md)
-- [End-to-End Validation](automation/validation.md)
+- [SOC Alert Automation Overview](automation/n8n/README.md)
+- [n8n Installation](automation/n8n/n8n-installation.md)
+- [Splunk Webhook Integration](automation/n8n/splunk-webhook-integration.md)
+- [n8n Workflow Design](automation/n8n/workflow-design.md)
+- [Telegram Integration](automation/n8n/telegram-integration.md)
+- [End-to-End Validation](automation/n8n/validation.md)
 
 ### Automation Evidence
 
@@ -237,7 +241,7 @@ The repository includes screenshots demonstrating:
 - Successful Telegram node execution
 - Final SOC alert delivered to Telegram
 
-[View additional project evidence](screenshots/README.md)
+[View additional project evidence](docs/evidence-index.md)
 
 > Sensitive credentials, Telegram tokens, Chat IDs, webhook identifiers, and environment-specific IDs were removed or redacted before publication.
 
@@ -313,158 +317,78 @@ All authentication, privilege-escalation, and attack-simulation activity was per
 
 ## Repository Structure
 
-```text
-mini-soc-splunk-lab/
-├── README.md
-├── automation/
-│   ├── README.md
-│   ├── n8n-installation.md
-│   ├── splunk-webhook-integration.md
-│   ├── workflow-design.md
-│   ├── telegram-integration.md
-│   ├── validation.md
-│   └── workflows/
-│       └── ssh-bruteforce-telegram.json
-├── detections/
-│   ├── 01-ssh-bruteforce.spl
-│   ├── 02-ssh-failure-to-success.spl
-│   ├── 03-ssh-privilege-escalation.spl
-│   ├── 04-multiple-failed-sudo-attempts.spl
-│   └── 05-privileged-account-login.spl
-├── lookups/
-│   └── privileged_accounts.csv
-├── reports/
-│   ├── 01-ssh-bruteforce-incident-report.md
-│   ├── 02-ssh-failure-to-success-incident-report.md
-│   ├── 03-ssh-privilege-escalation-incident-report.md
-│   ├── 04-multiple-failed-sudo-attempts-incident-report.md
-│   └── 05-privileged-account-login-incident-report.md
-├── docs/
-│   ├── lab/
-│   │   ├── architecture.md
-│   │   ├── setup-guide.md
-│   │   └── lessons-learned.md
-│   └── use-cases/
-│       ├── 01-ssh-bruteforce/
-│       │   ├── use-case.md
-│       │   └── alert-configuration.md
-│       ├── 02-ssh-failure-to-success/
-│       │   ├── use-case.md
-│       │   └── alert-configuration.md
-│       ├── 03-ssh-privilege-escalation/
-│       │   ├── use-case.md
-│       │   └── alert-configuration.md
-│       ├── 04-multiple-failed-sudo-attempts/
-│       │   ├── use-case.md
-│       │   └── alert-configuration.md
-│       └── 05-privileged-account-login/
-│           ├── use-case.md
-│           └── alert-configuration.md
-└── screenshots/
-    ├── 01-lab-virtual-machines.png
-    ├── 02-splunk-log-ingestion.png
-    ├── 03-ssh-bruteforce-events.png
-    ├── 04-detection-query-results.png
-    ├── 05-alert-configuration.png
-    ├── 06-triggered-alert.png
-    ├── 07-soc-dashboard.png
-    ├── 08-investigation-evidence.png
-    ├── 09-ssh-failure-success-events.png
-    ├── 10-ssh-failure-success-detection-results.png
-    ├── 11-ssh-privilege-escalation-detection-results.png
-    ├── 12-ssh-privilege-escalation-triggered-alert.png
-    ├── 13-n8n-container-running.png
-    ├── 14-n8n-web-interface.png
-    ├── 15-splunk-webhook-action.png
-    ├── 16-n8n-webhook-received.png
-    ├── 17-n8n-workflow-execution.png
-    ├── 18-n8n-remove-duplicates.png
-    ├── 19-n8n-telegram-execution.png
-    ├── 20-telegram-soc-alert.png
-    ├── 04-multiple-failed-sudo-attempts/
-    │   ├── 01-sudo-failed-attempts.png
-    │   ├── 02-raw-sudo-event-splunk.png
-    │   ├── 03-spl-detection-result.png
-    │   ├── 04-detection-threshold-validation.png
-    │   ├── 05-alert-configuration.png
-    │   ├── 06-alert-saved-successfully.png
-    │   ├── 07-triggered-alert.png
-    │   ├── 08-triggered-alert-result.png
-    │   ├── 09-sudo-authentication-investigation.png
-    │   └── 10-no-successful-sudo-session.png
-    ├── 05-privileged-account-login/
-    │   ├── 01-privileged-account-verification.png
-    │   ├── 02-successful-privileged-ssh-login.png
-    │   ├── 03-privileged-login-raw-log.png
-    │   ├── 04-splunk-raw-login-event.png
-    │   ├── 05-non-privileged-account-verification.png
-    │   ├── 06-negative-test-ssh-login.png
-    │   ├── 07-negative-test-raw-log.png
-    │   ├── 08-negative-test-splunk-event.png
-    │   ├── 09-negative-test-detection-validation.png
-    │   ├── 10-privileged-accounts-lookup.png
-    │   ├── 11-final-detection-results.png
-    │   ├── 12-alert-configuration.png
-    │   ├── 13-triggered-alert.png
-    │   ├── 14-triggered-alert-results.png
-    │   ├── 15-investigation-timeline.png
-    │   └── 16-investigation-context.png
-    └── README.md
-```
+- `README.md`
+- `docs/`: architecture, setup, lessons, references, and the preserved evidence index.
+- `use-cases/`: the roadmap and six phase indexes; each use case keeps its documentation, detection, alert configuration, incident report, and evidence together.
+    - `phase-01-ssh-authentication/` — UC-01 to UC-05
+    - `phase-02-linux-post-compromise/` — UC-06 to UC-15
+    - `phase-03-defensive-response/` — UC-16 to UC-20
+    - `phase-04-web-monitoring/` — UC-21 to UC-29
+    - `phase-05-network/` — UC-30 to UC-35
+    - `phase-06-windows-sysmon/` — UC-36 to UC-48
+- `automation/n8n/`: the existing automation documents, workflow JSON, and execution evidence.
+- `dashboards/`: dashboard documentation and evidence.
+- `templates/`: use-case, alert, incident, and evidence templates.
+- `scripts/validate-repository.py`: local structure and link checks.
+- `.github/workflows/repository-checks.yml`: runs the same checks in GitHub Actions.
+- `.gitignore`
+- `CONTRIBUTING.md`
+
+The complete directory listing is available in [Repository Structure](docs/repository-structure.md).
 
 ## Documentation
 
 ### Lab Documentation
 
-- [Lab Architecture](docs/lab/architecture.md)
-- [Lab Setup Guide](docs/lab/setup-guide.md)
-- [Lessons Learned](docs/lab/lessons-learned.md)
+- [Lab Architecture](docs/architecture/README.md)
+- [Lab Setup Guide](docs/setup/README.md)
+- [Lessons Learned](docs/lessons-learned.md)
 
 ### SSH Brute-Force Detection
 
-- [SSH Brute-Force Detection Use Case](docs/use-cases/01-ssh-bruteforce/use-case.md)
-- [SSH Brute-Force Alert Configuration](docs/use-cases/01-ssh-bruteforce/alert-configuration.md)
-- [SSH Brute-Force Detection Query](detections/01-ssh-bruteforce.spl)
-- [SSH Brute-Force Incident Report](reports/01-ssh-bruteforce-incident-report.md)
+- [SSH Brute-Force Detection Use Case](use-cases/phase-01-ssh-authentication/uc-01-ssh-bruteforce/README.md)
+- [SSH Brute-Force Alert Configuration](use-cases/phase-01-ssh-authentication/uc-01-ssh-bruteforce/alert-configuration.md)
+- [SSH Brute-Force Detection Query](use-cases/phase-01-ssh-authentication/uc-01-ssh-bruteforce/detection.spl)
+- [SSH Brute-Force Incident Report](use-cases/phase-01-ssh-authentication/uc-01-ssh-bruteforce/incident-report.md)
 
 ### SSH Failure-to-Success Detection
 
-- [SSH Failure-to-Success Detection Use Case](docs/use-cases/02-ssh-failure-to-success/use-case.md)
-- [SSH Failure-to-Success Alert Configuration](docs/use-cases/02-ssh-failure-to-success/alert-configuration.md)
-- [SSH Failure-to-Success Detection Query](detections/02-ssh-failure-to-success.spl)
-- [SSH Failure-to-Success Incident Report](reports/02-ssh-failure-to-success-incident-report.md)
+- [SSH Failure-to-Success Detection Use Case](use-cases/phase-01-ssh-authentication/uc-02-ssh-failure-to-success/README.md)
+- [SSH Failure-to-Success Alert Configuration](use-cases/phase-01-ssh-authentication/uc-02-ssh-failure-to-success/alert-configuration.md)
+- [SSH Failure-to-Success Detection Query](use-cases/phase-01-ssh-authentication/uc-02-ssh-failure-to-success/detection.spl)
+- [SSH Failure-to-Success Incident Report](use-cases/phase-01-ssh-authentication/uc-02-ssh-failure-to-success/incident-report.md)
 
 ### SSH Privilege-Escalation Detection
 
-- [SSH Privilege-Escalation Detection Use Case](docs/use-cases/03-ssh-privilege-escalation/use-case.md)
-- [SSH Privilege-Escalation Alert Configuration](docs/use-cases/03-ssh-privilege-escalation/alert-configuration.md)
-- [SSH Privilege-Escalation Detection Query](detections/03-ssh-privilege-escalation.spl)
-- [SSH Privilege-Escalation Incident Report](reports/03-ssh-privilege-escalation-incident-report.md)
+- [SSH Privilege-Escalation Detection Use Case](use-cases/phase-01-ssh-authentication/uc-03-ssh-privilege-escalation/README.md)
+- [SSH Privilege-Escalation Alert Configuration](use-cases/phase-01-ssh-authentication/uc-03-ssh-privilege-escalation/alert-configuration.md)
+- [SSH Privilege-Escalation Detection Query](use-cases/phase-01-ssh-authentication/uc-03-ssh-privilege-escalation/detection.spl)
+- [SSH Privilege-Escalation Incident Report](use-cases/phase-01-ssh-authentication/uc-03-ssh-privilege-escalation/incident-report.md)
 
 ### Multiple Failed sudo Attempts
 
-- [Multiple Failed sudo Attempts Use Case](docs/use-cases/04-multiple-failed-sudo-attempts/use-case.md)
-- [Multiple Failed sudo Attempts Alert Configuration](docs/use-cases/04-multiple-failed-sudo-attempts/alert-configuration.md)
-- [Multiple Failed sudo Attempts Detection Query](detections/04-multiple-failed-sudo-attempts.spl)
-- [Multiple Failed sudo Attempts Incident Report](reports/04-multiple-failed-sudo-attempts-incident-report.md)
+- [Multiple Failed sudo Attempts Use Case](use-cases/phase-01-ssh-authentication/uc-04-failed-sudo/README.md)
+- [Multiple Failed sudo Attempts Alert Configuration](use-cases/phase-01-ssh-authentication/uc-04-failed-sudo/alert-configuration.md)
+- [Multiple Failed sudo Attempts Detection Query](use-cases/phase-01-ssh-authentication/uc-04-failed-sudo/detection.spl)
+- [Multiple Failed sudo Attempts Incident Report](use-cases/phase-01-ssh-authentication/uc-04-failed-sudo/incident-report.md)
 
 ### Successful Login to a Privileged or Sensitive Account
 
-- [Privileged Account Login Use Case](docs/use-cases/05-privileged-account-login/use-case.md)
-- [Privileged Account Login Alert Configuration](docs/use-cases/05-privileged-account-login/alert-configuration.md)
-- [Privileged Account Login Detection Query](detections/05-privileged-account-login.spl)
-- [Privileged Account Login Incident Report](reports/05-privileged-account-login-incident-report.md)
-- [Privileged Accounts Lookup](lookups/privileged_accounts.csv)
+- [Privileged Account Login Use Case](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/README.md)
+- [Privileged Account Login Alert Configuration](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/alert-configuration.md)
+- [Privileged Account Login Detection Query](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/detection.spl)
+- [Privileged Account Login Incident Report](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/incident-report.md)
+- [Privileged Accounts Lookup](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/privileged_accounts.csv)
 
 ### Evidence
 
-- [Project Screenshots and Validation Evidence](screenshots/README.md)
+- [Project Screenshots and Validation Evidence](docs/evidence-index.md)
 
 ## Visual Evidence
 
 The following dashboard provides an overview of the security events monitored inside the Mini SOC lab.
 
-![SOC Monitoring Dashboard](screenshots/07-soc-dashboard.png)
+![SOC Monitoring Dashboard](dashboards/evidence/01-soc-monitoring-dashboard.png)
 
 The complete validation gallery includes:
 
@@ -491,67 +415,67 @@ The following screenshots document the complete validation workflow for **Succes
 
 #### Privileged Account Verification
 
-![Privileged Account Verification](screenshots/05-privileged-account-login/01-privileged-account-verification.png)
+![Privileged Account Verification](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/01-privileged-account-verification.png)
 
 #### Successful Privileged SSH Login
 
-![Successful Privileged SSH Login](screenshots/05-privileged-account-login/02-successful-privileged-ssh-login.png)
+![Successful Privileged SSH Login](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/02-positive-test-ssh-login.png)
 
 #### Raw Authentication Log
 
-![Privileged Login Raw Log](screenshots/05-privileged-account-login/03-privileged-login-raw-log.png)
+![Privileged Login Raw Log](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/03-positive-test-raw-auth-log.png)
 
 #### Splunk Log Ingestion
 
-![Splunk Raw Login Event](screenshots/05-privileged-account-login/04-splunk-raw-login-event.png)
+![Splunk Raw Login Event](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/04-positive-test-splunk-ingestion.png)
 
 #### Non-Privileged Account Verification
 
-![Non-Privileged Account Verification](screenshots/05-privileged-account-login/05-non-privileged-account-verification.png)
+![Non-Privileged Account Verification](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/05-non-privileged-account-verification.png)
 
 #### Negative Test — Successful SSH Login
 
-![Negative Test SSH Login](screenshots/05-privileged-account-login/06-negative-test-ssh-login.png)
+![Negative Test SSH Login](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/06-negative-test-ssh-login.png)
 
 #### Negative Test — Raw Authentication Log
 
-![Negative Test Raw Log](screenshots/05-privileged-account-login/07-negative-test-raw-log.png)
+![Negative Test Raw Log](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/07-negative-test-raw-auth-log.png)
 
 #### Negative Test — Splunk Ingestion
 
-![Negative Test Splunk Event](screenshots/05-privileged-account-login/08-negative-test-splunk-event.png)
+![Negative Test Splunk Event](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/08-negative-test-splunk-ingestion.png)
 
 #### Negative Test — Detection Validation
 
-![Negative Test Detection Validation](screenshots/05-privileged-account-login/09-negative-test-detection-validation.png)
+![Negative Test Detection Validation](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/09-prototype-hardcoded-positive-check.png)
 
 #### Privileged Accounts Lookup
 
-![Privileged Accounts Lookup](screenshots/05-privileged-account-login/10-privileged-accounts-lookup.png)
+![Privileged Accounts Lookup](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/10-privileged-accounts-lookup.png)
 
 #### Final Detection Results
 
-![Final Detection Results](screenshots/05-privileged-account-login/11-final-detection-results.png)
+![Final Detection Results](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/11-lookup-based-detection-results.png)
 
 #### Alert Configuration
 
-![Alert Configuration](screenshots/05-privileged-account-login/12-alert-configuration.png)
+![Alert Configuration](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/12-alert-configuration.png)
 
 #### Triggered Alert
 
-![Triggered Alert](screenshots/05-privileged-account-login/13-triggered-alert.png)
+![Triggered Alert](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/13-alert-triggered.png)
 
 #### Triggered Alert Results
 
-![Triggered Alert Results](screenshots/05-privileged-account-login/14-triggered-alert-results.png)
+![Triggered Alert Results](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/14-triggered-alert-results.png)
 
 #### Investigation Timeline
 
-![Investigation Timeline](screenshots/05-privileged-account-login/15-investigation-timeline.png)
+![Investigation Timeline](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/15-investigation-timeline.png)
 
 #### Investigation Context
 
-![Investigation Context](screenshots/05-privileged-account-login/16-investigation-context.png)
+![Investigation Context](use-cases/phase-01-ssh-authentication/uc-05-privileged-login/evidence/16-investigation-context.png)
 
 #### UC5 Evidence Summary
 
