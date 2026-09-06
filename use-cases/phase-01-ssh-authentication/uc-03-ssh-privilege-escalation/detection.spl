@@ -1,0 +1,37 @@
+index=main host=victim source="/var/log/auth.log"
+("Accepted password" OR "COMMAND=" OR "session opened for user root")
+| eval event_type=case(
+    match(_raw, "Accepted password"), "ssh_login",
+    match(_raw, "COMMAND="), "sudo_command",
+    match(_raw, "session opened for user root"), "root_session"
+  )
+| rex field=_raw "Accepted password for (?<login_user>\S+) from (?<src_ip>\d{1,3}(?:\.\d{1,3}){3})"
+| rex field=_raw "sudo:\s+(?<sudo_user>\S+)\s+:\s+.*COMMAND=(?<executed_command>.+)$"
+| rex field=_raw "session opened for user root\(uid=0\) by (?<session_user>[^\(]+)"
+| eval username=trim(coalesce(login_user, sudo_user, session_user))
+| sort 0 host username _time
+| eval login_marker=if(event_type="ssh_login", _time, null())
+| eval login_ip_marker=if(event_type="ssh_login", src_ip, null())
+| streamstats
+    last(login_marker) as login_time
+    last(login_ip_marker) as correlated_src_ip
+    by host username
+| eval sudo_marker=if(event_type="sudo_command", _time, null())
+| eval command_marker=if(event_type="sudo_command", executed_command, null())
+| streamstats
+    last(sudo_marker) as sudo_time
+    last(command_marker) as correlated_command
+    by host username
+| where event_type="root_session"
+    AND isnotnull(login_time)
+    AND isnotnull(sudo_time)
+    AND sudo_time >= login_time
+    AND _time >= sudo_time
+    AND (_time-login_time) <= 600
+| eval root_session_time=_time
+| eval time_to_sudo_seconds=round(sudo_time-login_time, 2)
+| eval time_to_root_seconds=round(root_session_time-login_time, 2)
+| convert ctime(login_time) ctime(sudo_time) ctime(root_session_time)
+| rename correlated_src_ip as src_ip correlated_command as executed_command
+| table host src_ip username login_time sudo_time root_session_time executed_command time_to_sudo_seconds time_to_root_seconds
+| sort - root_session_time

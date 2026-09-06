@@ -1,0 +1,7 @@
+index=* host="victim" sourcetype="linux_secure"
+("Accepted password for" OR "Accepted publickey for")
+| rex field=_raw "Accepted (?<auth_method>\S+) for (?<user>\S+) from (?<src_ip>\d{1,3}(?:\.\d{1,3}){3}) port (?<src_port>\d+)"
+| lookup privileged_accounts.csv user OUTPUT account_type severity
+| where isnotnull(account_type)
+| table _time host user account_type src_ip src_port auth_method severity
+| sort - _time

@@ -1,0 +1,4 @@
+index=* source="/var/log/auth.log" "incorrect password attempts"
+| rex field=_raw "sudo:\s+(?<user>\S+)\s+:\s+(?<failed_attempts>\d+)\s+incorrect password attempts"
+| where failed_attempts >= 3
+| table _time host user failed_attempts
