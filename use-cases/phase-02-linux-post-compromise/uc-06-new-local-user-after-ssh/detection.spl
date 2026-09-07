@@ -1,0 +1,13 @@
+index=* host="victim" source="/var/log/auth.log"
+("Accepted password for" OR "new user:")
+| rex field=_raw "Accepted password for (?<ssh_user>\S+) from (?<src_ip>\d+\.\d+\.\d+\.\d+)"
+| rex field=_raw "new user:\s+name=(?<new_user>[^,\s]+)"
+| eval event_type=case(
+    isnotnull(ssh_user), "ssh_login",
+    isnotnull(new_user), "user_created"
+  )
+| sort 0 _time
+| streamstats last(ssh_user) as login_user last(src_ip) as login_src_ip last(eval(if(event_type="ssh_login", _time, null()))) as login_time
+| where event_type="user_created" AND (_time-login_time)<=600
+| eval time_to_creation=round(_time-login_time,2)
+| table _time host login_user login_src_ip new_user time_to_creation
