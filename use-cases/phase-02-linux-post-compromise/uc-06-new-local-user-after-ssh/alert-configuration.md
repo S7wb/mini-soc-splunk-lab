@@ -2,19 +2,30 @@
 
 [Use case](README.md)
 
-**Status:** Evidence Pending
+**Status:** Validated
 
-| Setting | Planned / observed value |
+| Setting | Observed value |
 |---|---|
-| Search and tested version | TBD |
-| Search window / schedule | TBD |
-| Trigger condition / mode | TBD |
-| Roadmap / configured severity | TBD |
-| Throttling fields / period | TBD |
-| Alert actions | TBD |
-| Validation time / timezone | TBD |
-| Trigger evidence | Evidence Pending |
+| Search and tested version | Splunk Enterprise — version not recorded during validation |
+| Search window / schedule | Last 10 minutes / every 5 minutes (`*/5 * * * *`) |
+| Trigger condition / mode | Number of Results `> 0` / Trigger Once |
+| Roadmap / configured severity | High / High |
+| Throttling fields / period | None configured |
+| Alert actions | Add to Triggered Alerts |
+| Validation time / timezone | 2026-09-07 10:25:01 / UTC+03:00 |
+| Trigger evidence | Captured — filename will be assigned during final evidence organization |
 
-## Validation
+## Alert Name
 
-Record the actual configuration and results after implementation. No successful alert execution is claimed by this template.
+`New Local User Created After SSH Login`
+
+## Description
+
+Detects the creation of a new local Linux user within 10 minutes after a successful SSH login.
+
+## Detection Window
+
+The correlation logic requires the local account creation event to occur within:
+
+```text
+600 seconds
