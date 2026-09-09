@@ -200,7 +200,7 @@ These limitations are documented to avoid overstating the detection's attributio
 - [x] Investigate the detected activity.
 - [x] Map the behavior to MITRE ATT&CK.
 - [x] Complete the incident report.
-- [ ] Finalize evidence filenames and captions.
+- [x] Finalize evidence filenames and captions.
 - [ ] Complete final repository QA.
 
 ## Validation Result
