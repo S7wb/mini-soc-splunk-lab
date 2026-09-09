@@ -38,6 +38,8 @@ The exact source timestamps are preserved in the Splunk evidence screenshots.
 
 ## Evidence and Analysis
 
+Supporting evidence: [UC-06 Evidence Index](evidence/README.md)
+
 ### Successful SSH Login
 
 Splunk identified a successful SSH login associated with:
