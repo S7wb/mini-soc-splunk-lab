@@ -201,7 +201,7 @@ These limitations are documented to avoid overstating the detection's attributio
 - [x] Map the behavior to MITRE ATT&CK.
 - [x] Complete the incident report.
 - [x] Finalize evidence filenames and captions.
-- [ ] Complete final repository QA.
+- [x] Complete final repository QA.
 
 ## Validation Result
 
@@ -209,4 +209,4 @@ These limitations are documented to avoid overstating the detection's attributio
 
 UC-06 detection and alert behavior were successfully implemented and validated in the authorized Mini SOC lab.
 
-The use case will be marked fully complete after the final evidence organization and repository QA are completed.
+UC-06 is fully documented and validated with detection logic, alert configuration, investigation findings, MITRE ATT&CK mapping, and supporting evidence.
