@@ -13,7 +13,7 @@
 | Throttling fields / period | None configured |
 | Alert actions | Add to Triggered Alerts |
 | Validation time / timezone | 2026-09-07 10:25:01 / UTC+03:00 |
-| Trigger evidence | Captured — filename will be assigned during final evidence organization |
+| Trigger evidence | [05-triggered-alert.png](evidence/05-triggered-alert.png) and [06-triggered-alert-results.png](evidence/06-triggered-alert-results.png) |
 
 ## Alert Name
 
