@@ -4,9 +4,9 @@
 
 ## Overview
 
-This document describes the Splunk alert configuration used to detect repeated failed SSH password attempts followed by a successful login from the same source IP address and against the same account.
+This document describes the Splunk alert configuration used to detect repeated failed SSH password authentication attempts followed by a successful login from the same source IP address and against the same account.
 
-This authentication sequence may indicate that an attacker successfully guessed or obtained valid credentials.
+This authentication sequence may indicate that an attacker successfully guessed, obtained, or reused valid credentials.
 
 ## Alert Details
 
@@ -36,28 +36,52 @@ use-cases/phase-01-ssh-authentication/uc-02-ssh-failure-to-success/detection.spl
 
 The query:
 
-1. Searches for failed and accepted SSH password events.
+1. Searches for failed and accepted SSH password authentication events.
 2. Extracts the authentication result.
 3. Extracts the source IP address and username.
-4. Handles compressed `message repeated` events.
-5. Calculates the total number of failed attempts.
-6. Identifies the first and last failed authentication events.
-7. Identifies the successful login event.
-8. Confirms that the success occurred after the failed attempts.
-9. Confirms that the full sequence occurred within ten minutes.
-10. Returns the relevant fields for investigation.
+4. Handles compressed `message repeated` events when present.
+5. Assigns a weight to failed authentication events.
+6. Sorts events chronologically for each host, source IP, and username.
+7. Uses `auth_sequence` to separate individual authentication sequences.
+8. Calculates the failed attempts belonging to each authentication sequence.
+9. Identifies the first and last failed authentication events.
+10. Identifies the subsequent successful login.
+11. Requires at least five failed attempts.
+12. Confirms that the successful login occurred after the failures.
+13. Confirms that the complete failure-to-success sequence occurred within 600 seconds.
+14. Returns the relevant fields required for SOC investigation.
+
+## Authentication Sequence Correlation
+
+The detection uses:
+
+```text
+auth_sequence
+```
+
+to prevent unrelated authentication activity from being combined into the same detection result.
+
+Authentication events are grouped by:
+
+- Destination host
+- Source IP address
+- Username
+- Authentication sequence
+
+This ensures that failed attempts are correlated with the appropriate subsequent successful login instead of being combined with unrelated historical login activity.
 
 ## Alert Workflow
 
 1. Failed SSH password attempts are recorded in `/var/log/auth.log`.
 2. Splunk Universal Forwarder sends the authentication events to Splunk Enterprise.
-3. A successful SSH password login occurs after the failures.
+3. A successful SSH password login occurs after repeated failures.
 4. The scheduled alert runs every five minutes.
-5. The search reviews the previous ten minutes.
-6. The SPL query correlates events by destination host, source IP, and username.
-7. A result is returned when five or more failures are followed by a successful login.
-8. Splunk adds the alert to the Triggered Alerts page with High severity.
-9. The analyst reviews the result and begins investigation.
+5. The scheduled search reviews the previous 10 minutes of authentication activity.
+6. The SPL query separates authentication sequences using `auth_sequence`.
+7. The query correlates events by destination host, source IP address, username, and authentication sequence.
+8. A result is returned when five or more failed attempts are followed by a successful login within 600 seconds.
+9. Splunk adds the alert to the Triggered Alerts page with High severity.
+10. The analyst reviews the correlated result and begins investigation.
 
 ## Detection Output
 
@@ -66,35 +90,65 @@ The query:
 | `host` | Linux system receiving the authentication activity |
 | `src_ip` | Source IP address generating the attempts |
 | `username` | Account targeted by the activity |
-| `failed_attempts` | Total failed password attempts |
+| `failed_attempts` | Number of failed password authentication attempts in the sequence |
 | `first_failure` | Time of the first failed attempt |
 | `last_failure` | Time of the final failed attempt |
-| `successful_login_time` | Time of the successful authentication |
+| `successful_login_time` | Time of the subsequent successful authentication |
 | `attack_window_seconds` | Time between the first failure and successful login |
 | `time_after_last_failure_seconds` | Time between the final failure and successful login |
 
 ## Validated Alert Test
 
-The alert was tested using controlled SSH authentication activity inside the Mini SOC lab.
+The alert was validated using controlled SSH authentication activity inside the isolated Mini SOC lab on `2026-09-28`.
 
-Five incorrect passwords were entered against the test account, followed by a successful login from the same source IP address.
+Repeated incorrect SSH passwords were entered against the test account, followed by a successful login from the same source IP address.
+
+The validated detection produced the following result:
 
 | Field | Validated Result |
 |---|---|
 | Alert Status | Triggered successfully |
-| Alert Time | `2026-07-19 21:55:01 +03:00` |
+| Alert Trigger Time | `2026-09-28 16:40:01 +03` |
 | Destination Host | `victim` |
+| Destination IP | `192.168.56.20` |
 | Source IP | `192.168.56.30` |
 | Targeted Account | `soc-test` |
-| Failed Attempts | `5` |
-| First Failure | `2026-07-19 21:51:33 +03:00` |
-| Last Failure | `2026-07-19 21:51:39 +03:00` |
-| Successful Login | `2026-07-19 21:51:46 +03:00` |
-| Attack Window | Approximately `12.69` seconds |
-| Time After Final Failure | Approximately `6.49` seconds |
+| Failed Attempts | `6` |
+| First Failure | `2026-09-28 16:32:53.670766` |
+| Last Failure | `2026-09-28 16:32:57.331134` |
+| Successful Login | `2026-09-28 16:33:01.543799` |
+| Attack Window | `7.87 seconds` |
+| Time After Final Failure | `4.21 seconds` |
 | Severity | High |
+| Alert Type | Scheduled |
 
-The alert appeared successfully in the Splunk Triggered Alerts page after the next scheduled execution.
+The alert appeared successfully in the Splunk Triggered Alerts page during the next scheduled execution.
+
+The triggered alert result displayed the expected investigation fields and matched the manually validated SPL result.
+
+## Detection Tuning Performed During Validation
+
+During final validation, the original correlation logic was reviewed and improved.
+
+The previous version grouped events using only:
+
+```text
+host + src_ip + username
+```
+
+This could cause unrelated authentication sequences occurring within the search window to be combined into one result.
+
+The detection was updated to create an `auth_sequence` value before aggregation.
+
+The final correlation key is:
+
+```text
+host + src_ip + username + auth_sequence
+```
+
+This separates individual failure-to-success authentication sequences and reduces the risk of incorrect event correlation.
+
+The updated detection was retested successfully before final validation.
 
 ## Why High Severity Was Selected
 
@@ -102,7 +156,7 @@ High severity was selected because the alert confirms that a successful SSH pass
 
 This sequence provides stronger evidence of possible credential compromise than failed login attempts alone.
 
-The severity should be increased to Critical when additional evidence is observed, including:
+The severity may require escalation when additional evidence is observed, including:
 
 - Successful authentication to the `root` account
 - Authentication to an administrative account
@@ -115,36 +169,54 @@ The severity should be increased to Critical when additional evidence is observe
 
 ## Search Window Requirement
 
-The alert is designed to operate using a limited rolling search window:
+The scheduled alert uses the following rolling search window:
 
 ```text
 Last 10 minutes
 ```
 
-The query should not normally be executed over `All time` because unrelated historical authentication attempts may be grouped together when they share the same host, source IP, and username.
+The alert executes every five minutes.
 
-A separate historical-hunting query would require sessionization or time-based grouping to isolate individual failure-to-success sequences.
+The 10-minute scheduler window provides sufficient overlap for Splunk to observe the complete authentication sequence even when the activity occurs near the boundary between scheduled executions.
+
+The detection logic itself still requires:
+
+```text
+attack_window_seconds <= 600
+```
+
+Therefore, increasing the scheduled search window to 10 minutes does not change the detection requirement.
+
+A valid failure-to-success sequence must still occur within 600 seconds.
+
+The scheduled alert is not intended to run over `All time`.
+
+Historical threat hunting should use an appropriately bounded time range and investigation-specific search logic.
 
 ## Recommended Production Tuning
 
 | Setting | Tuning Consideration |
 |---|---|
 | Failure threshold | Adjust based on normal authentication behavior |
-| Search window | Increase for low-and-slow attacks when required |
-| Schedule | Align with the configured search window |
+| Detection sequence | Maintain sequence-aware correlation to avoid unrelated event grouping |
+| Search window | Adjust for scheduling overlap or low-and-slow attack scenarios |
+| Schedule | Align with the configured search window and ingestion latency |
 | Severity | Increase when privileged accounts or post-login activity are involved |
 | Throttling | Enable when duplicate alerts create excessive noise |
-| Allowlisting | Exclude approved scanners or administration systems when justified |
+| Allowlisting | Exclude approved scanners or administration systems only when justified |
 | Account context | Increase priority for privileged or sensitive accounts |
-| Source enrichment | Add GeoIP, reputation, or asset-context information |
+| Source enrichment | Add GeoIP, reputation, asset, or identity context |
+| Ingestion delay | Account for delayed events when tuning the scheduled search window |
 
 ## Validation Status
 
 The alert configuration has been:
 
 - Configured in Splunk Enterprise
+- Updated with sequence-aware authentication correlation
 - Tested using controlled authentication activity
-- Triggered successfully
+- Validated with six failed password attempts followed by a successful login
+- Triggered successfully as a scheduled alert
 - Verified in the Triggered Alerts page
 - Confirmed to display the expected investigation fields
 - Assigned High severity
