@@ -8,3 +8,7 @@ The files below were carried over from the supplied project. This index records 
 |---|---|
 | 01 | [01-raw-failure-to-success-events.png](01-raw-failure-to-success-events.png) |
 | 02 | [02-spl-correlation-results.png](02-spl-correlation-results.png) |
+| 03 | [03-alert-configuration.png](03-alert-configuration.png) |
+| 04 | [04-alert-triggered.png](04-alert-triggered.png) |
+| 05 | [05-triggered-alert-results.png](05-triggered-alert-results.png) |
+
