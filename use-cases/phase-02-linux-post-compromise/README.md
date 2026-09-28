@@ -4,7 +4,7 @@
 
 | UC | Use case | Roadmap severity | Material status |
 |---|---|---|---|
-| UC-06 | [New Local User Created After SSH Login](uc-06-new-local-user-after-ssh/README.md) | High | Planned — Not Yet Implemented or Validated |
+| UC-06 | [New Local User Created After SSH Login](uc-06-new-local-user-after-ssh/README.md) | High | Validated |
 | UC-07 | [User Added to sudo Group](uc-07-user-added-to-sudo-group/README.md) | Critical | Planned — Not Yet Implemented or Validated |
 | UC-08 | [Suspicious Command Download](uc-08-suspicious-command-download/README.md) | High | Planned — Not Yet Implemented or Validated |
 | UC-09 | [Suspicious Script or Binary Execution](uc-09-suspicious-script-or-binary-execution/README.md) | High | Planned — Not Yet Implemented or Validated |
