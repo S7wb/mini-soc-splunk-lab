@@ -7,5 +7,5 @@
 | UC-01 | [SSH Brute-Force Detection](uc-01-ssh-bruteforce/README.md) | Medium | Validated |
 | UC-02 | [SSH Brute Force Followed by Successful Login](uc-02-ssh-failure-to-success/README.md) | High | Validated |
 | UC-03 | [Successful SSH Login Followed by Privilege Escalation](uc-03-ssh-privilege-escalation/README.md) | Critical | Validated |
-| UC-04 | [Multiple Failed sudo Attempts](uc-04-failed-sudo/README.md) | High | Validated |
+| UC-04 | [Multiple Failed sudo Attempts](uc-04-failed-sudo/README.md) | Medium | Validated |
 | UC-05 | [Successful Login to a Privileged or Sensitive Account](uc-05-privileged-login/README.md) | High / Critical | Validated |
